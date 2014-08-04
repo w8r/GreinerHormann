@@ -1,0 +1,13 @@
+.DS_Store
+.externalToolBuilders/*
+.project
+*.properties
+.idea/*
+.settings/*
+buildlogs/*
+node_modules/*
+temp/*
+dist/*
+docs/*
+
+build.properties

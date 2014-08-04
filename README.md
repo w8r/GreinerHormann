@@ -1,4 +1,2 @@
-vatti
-=====
-
-Vatti polygon clipping algorithm
+Greiner-Hormann polygon clipping algorithm
+==========================================
