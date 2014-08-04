@@ -6,8 +6,6 @@
 .settings/*
 buildlogs/*
 node_modules/*
-temp/*
-dist/*
 docs/*
 
 build.properties
