@@ -450,11 +450,6 @@ function clip(polygonA, polygonB, sourceForwards, clipForwards) {
     if (result.length > 0) {
         result = result[0].getPoints().slice(0, result[0].vertices - 1);
 
-
-
-        //    map = map || source._map
-        //  var intersection = L.PolyUtil._clipGPC(source, clip);
-
         if (result) {
             for (var i = 0, len = result.length; i < len; i++) {
                 result[i] = new L.LatLng(result[i][1], result[i][0]);
