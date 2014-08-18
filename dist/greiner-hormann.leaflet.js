@@ -1,478 +1,494 @@
 (function(root, factory) {
-        if (typeof define === 'function' && define.amd) {
-            define([], factory);
-        } else if (typeof exports === 'object') {
-            module.exports = factory();
-        } else {
-            /**
-             * @api
-             */
-            root.greinerHormann = factory();
-        }
-    }(this, function() {
-// ES5 15.4.3.2 Array.isArray ( arg )
-// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/isArray
-Array.isArray = Array.isArray || function(o) {
-    return Boolean(o && Object.prototype.toString.call(Object(o)) === '[object Array]');
-};
-/**
- * Vertex representation
- *
- * @param {Number|Array.<Number>} x
- * @param {Number}                [y]
- * @constructor
- */
-var Vertex = function(x, y) {
-
-    // Coords
-    if (Array.isArray(x)) {
-        y = x[1];
-        x = x[0];
-    }
-
-    /**
-     * X coordinate
-     * @type {Number}
-     */
-    this.x = x;
-
-    /**
-     * Y coordinate
-     * @type {Number}
-     */
-    this.y = y;
-
-    /**
-     * Next node
-     * @type {Vertex}
-     */
-    this.next = null;
-
-    /**
-     * Previous vertex
-     * @type {Vertex}
-     */
-    this.prev = null;
-
-    /**
-     * Corresponding intersection in other polygon
-     */
-    this._corresponding = null;
-
-    /**
-     * Distance from previous
-     */
-    this._distance = 0.0;
-
-    /**
-     * Entry/exit point in another polygon
-     * @type {Boolean}
-     */
-    this._isEntry = true;
-
-    /**
-     * Intersection vertex flag
-     * @type {Boolean}
-     */
-    this._isIntersection = false;
-
-    /**
-     * Loop check
-     * @type {Boolean}
-     */
-    this._visited = false;
-};
-
-/** 
- * Creates intersection vertex
- * @param  {Number} x
- * @param  {Number} y
- * @param  {Number} distance
- * @return {Vertex}
- */
-Vertex.createIntersection = function(x, y, distance) {
-    var vertex = new Vertex(x, y);
-    vertex._distance = distance;
-    vertex._isIntersection = true;
-    vertex._isEntry = false;
-    return vertex;
-};
-
-/**
- * Mark as visited
- */
-Vertex.prototype.setChecked = function() {
-    this._visited = true;
-    if (this._corresponding !== null && !this._corresponding._visited) {
-        this._corresponding.setChecked();
-    }
-};
-
-/**
- * Convenience
- * @param  {Vertex}  v
- * @return {Boolean}
- */
-Vertex.prototype.equals = function(v) {
-    return this.x === v.x && this.y === v.y;
-};
-
-/**
- * Check if vertex is inside a polygon by odd-even rule:
- * If the number of intersections of a ray out of the point and polygon
- * segments is odd - the point is inside.
- */
-Vertex.prototype.isInside = function(poly) {
-    var intersections = 0,
-        infinity = new Vertex(Infinity, this.y),
-        vertex = poly.first,
-        i;
-    do {
-        i = new Intersection(this, infinity, vertex, poly.getNext(vertex.next));
-        if (!vertex._isIntersection && i.valid()) {
-            intersections++;
-        }
-        vertex = vertex.next;
-    } while (!vertex.equals(poly.first));
-
-    return (intersections % 2) !== 0;
-};
-/**
- * Intersection
- * @param {Vertex} s1
- * @param {Vertex} s2
- * @param {Vertex} c1
- * @param {Vertex} c2
- * @constructor
- */
-var Intersection = function(s1, s2, c1, c2) {
-
-    /**
-     * @type {Number}
-     */
-    this.x = 0.0;
-
-    /**
-     * @type {Number}
-     */
-    this.y = 0.0;
-
-    /**
-     * @type {Number}
-     */
-    this.toSource = 0.0;
-
-    /**
-     * @type {Number}
-     */
-    this.toClip = 0.0;
-
-    var d = (c2.y - c1.y) * (s2.x - s1.x) - (c2.x - c1.x) * (s2.y - s1.y);
-
-    if (d === 0) {
-        return;
-    }
-
-    this.toSource = ((c2.x - c1.x) * (s1.y - c1.y) - (c2.y - c1.y) * (s1.x - c1.x)) / d;
-    this.toClip = ((s2.x - s1.x) * (s1.y - c1.y) - (s2.y - s1.y) * (s1.x - c1.x)) / d;
-
-    if (this.valid()) {
-        this.x = s1.x + this.toSource * (s2.x - s1.x);
-        this.y = s1.y + this.toSource * (s2.y - s1.y);
-    }
-};
-
-/**
- * @return {Boolean}
- */
-Intersection.prototype.valid = function() {
-    return (0 < this.toSource && this.toSource < 1) && (0 < this.toClip && this.toClip < 1);
-};
-/**
- * Polygon representation
- * @param {Array.<Array.<Number>>} p
- */
-var Polygon = function(p) {
-
-    /**
-     * @type {Vertex}
-     */
-    this.first = null;
-
-    /**
-     * @type {Number}
-     */
-    this.vertices = 0;
-
-    for (var i = 0, len = p.length; i < len; i++) {
-        this.addVertex(new Vertex(p[i]));
-    }
-};
-
-/**
- * Add a vertex object to the polygon
- * (vertex is added at the 'end' of the list')
- *
- * @param vertex
- */
-Polygon.prototype.addVertex = function(vertex) {
-    if (this.first == null) {
-        this.first = vertex;
-        this.first.next = vertex;
-        this.first.prev = vertex;
+    if (typeof define === 'function' && define.amd) {
+        define([], factory);
+    } else if (typeof exports === 'object') {
+        module.exports = factory();
     } else {
-        var next = this.first,
-            prev = next.prev;
+        /**
+         * @api
+         */
+        root.greinerHormann = factory();
+    }
+}(this, function() {
+    // ES5 15.4.3.2 Array.isArray ( arg )
+    // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/isArray
+    Array.isArray = Array.isArray || function(o) {
+        return Boolean(o && Object.prototype.toString.call(Object(o)) === '[object Array]');
+    };
+    /**
+     * Vertex representation
+     *
+     * @param {Number|Array.<Number>} x
+     * @param {Number}                [y]
+     * @constructor
+     */
+    var Vertex = function(x, y) {
 
-        next.prev = vertex;
-        vertex.next = next;
+        // Coords
+        if (Array.isArray(x)) {
+            y = x[1];
+            x = x[0];
+        }
+
+        /**
+         * X coordinate
+         * @type {Number}
+         */
+        this.x = x;
+
+        /**
+         * Y coordinate
+         * @type {Number}
+         */
+        this.y = y;
+
+        /**
+         * Next node
+         * @type {Vertex}
+         */
+        this.next = null;
+
+        /**
+         * Previous vertex
+         * @type {Vertex}
+         */
+        this.prev = null;
+
+        /**
+         * Corresponding intersection in other polygon
+         */
+        this._corresponding = null;
+
+        /**
+         * Distance from previous
+         */
+        this._distance = 0.0;
+
+        /**
+         * Entry/exit point in another polygon
+         * @type {Boolean}
+         */
+        this._isEntry = true;
+
+        /**
+         * Intersection vertex flag
+         * @type {Boolean}
+         */
+        this._isIntersection = false;
+
+        /**
+         * Loop check
+         * @type {Boolean}
+         */
+        this._visited = false;
+    };
+
+    /** 
+     * Creates intersection vertex
+     * @param  {Number} x
+     * @param  {Number} y
+     * @param  {Number} distance
+     * @return {Vertex}
+     */
+    Vertex.createIntersection = function(x, y, distance) {
+        var vertex = new Vertex(x, y);
+        vertex._distance = distance;
+        vertex._isIntersection = true;
+        vertex._isEntry = false;
+        return vertex;
+    };
+
+    /**
+     * Mark as visited
+     */
+    Vertex.prototype.setChecked = function() {
+        this._visited = true;
+        if (this._corresponding !== null && !this._corresponding._visited) {
+            this._corresponding.setChecked();
+        }
+    };
+
+    /**
+     * Convenience
+     * @param  {Vertex}  v
+     * @return {Boolean}
+     */
+    Vertex.prototype.equals = function(v) {
+        return this.x === v.x && this.y === v.y;
+    };
+
+    /**
+     * Check if vertex is inside a polygon by odd-even rule:
+     * If the number of intersections of a ray out of the point and polygon
+     * segments is odd - the point is inside.
+     */
+    Vertex.prototype.isInside = function(poly) {
+        var intersections = 0,
+            infinity = new Vertex(Infinity, this.y),
+            vertex = poly.first,
+            i;
+        do {
+            i = new Intersection(this, infinity, vertex, poly.getNext(vertex.next));
+            if (!vertex._isIntersection && i.valid()) {
+                intersections++;
+            }
+            vertex = vertex.next;
+        } while (!vertex.equals(poly.first));
+
+        return (intersections % 2) !== 0;
+    };
+    /**
+     * Intersection
+     * @param {Vertex} s1
+     * @param {Vertex} s2
+     * @param {Vertex} c1
+     * @param {Vertex} c2
+     * @constructor
+     */
+    var Intersection = function(s1, s2, c1, c2) {
+
+        /**
+         * @type {Number}
+         */
+        this.x = 0.0;
+
+        /**
+         * @type {Number}
+         */
+        this.y = 0.0;
+
+        /**
+         * @type {Number}
+         */
+        this.toSource = 0.0;
+
+        /**
+         * @type {Number}
+         */
+        this.toClip = 0.0;
+
+        var d = (c2.y - c1.y) * (s2.x - s1.x) - (c2.x - c1.x) * (s2.y - s1.y);
+
+        if (d === 0) {
+            return;
+        }
+
+        this.toSource = ((c2.x - c1.x) * (s1.y - c1.y) - (c2.y - c1.y) * (s1.x - c1.x)) / d;
+        this.toClip = ((s2.x - s1.x) * (s1.y - c1.y) - (s2.y - s1.y) * (s1.x - c1.x)) / d;
+
+        if (this.valid()) {
+            this.x = s1.x + this.toSource * (s2.x - s1.x);
+            this.y = s1.y + this.toSource * (s2.y - s1.y);
+        }
+    };
+
+    /**
+     * @return {Boolean}
+     */
+    Intersection.prototype.valid = function() {
+        return (0 < this.toSource && this.toSource < 1) && (0 < this.toClip && this.toClip < 1);
+    };
+    /**
+     * Polygon representation
+     * @param {Array.<Array.<Number>>} p
+     */
+    var Polygon = function(p) {
+
+        /**
+         * @type {Vertex}
+         */
+        this.first = null;
+
+        /**
+         * @type {Number}
+         */
+        this.vertices = 0;
+
+        for (var i = 0, len = p.length; i < len; i++) {
+            this.addVertex(new Vertex(p[i]));
+        }
+    };
+
+    /**
+     * Add a vertex object to the polygon
+     * (vertex is added at the 'end' of the list')
+     *
+     * @param vertex
+     */
+    Polygon.prototype.addVertex = function(vertex) {
+        if (this.first == null) {
+            this.first = vertex;
+            this.first.next = vertex;
+            this.first.prev = vertex;
+        } else {
+            var next = this.first,
+                prev = next.prev;
+
+            next.prev = vertex;
+            vertex.next = next;
+            vertex.prev = prev;
+            prev.next = vertex;
+        }
+        this.vertices++;
+    };
+
+    /**
+     * Inserts a vertex inbetween start and end
+     *
+     * @param {Vertex} vertex
+     * @param {Vertex} start
+     * @param {Vertex} end
+     */
+    Polygon.prototype.insertVertex = function(vertex, start, end) {
+        var prev, curr = start;
+
+        while (!curr.equals(end) && curr._distance < vertex._distance) {
+            curr = curr.next;
+        }
+
+        vertex.next = curr;
+        prev = curr.prev;
+
         vertex.prev = prev;
         prev.next = vertex;
-    }
-    this.vertices++;
-};
+        curr.prev = vertex;
 
-/**
- * Inserts a vertex inbetween start and end
- *
- * @param {Vertex} vertex
- * @param {Vertex} start
- * @param {Vertex} end
- */
-Polygon.prototype.insertVertex = function(vertex, start, end) {
-    var prev, curr = start;
+        this.vertices++;
+    };
 
-    while (!curr.equals(end) && curr._distance < vertex._distance) {
-        curr = curr.next;
-    }
-
-    vertex.next = curr;
-    prev = curr.prev;
-
-    vertex.prev = prev;
-    prev.next = vertex;
-    curr.prev = vertex;
-
-    this.vertices++;
-};
-
-/**
- * Get next non-intersection point
- * @param  {Vertex} v
- * @return {Vertex}
- */
-Polygon.prototype.getNext = function(v) {
-    var c = v;
-    while (c._isIntersection) {
-        c = c.next;
-    }
-    return c;
-};
-
-/**
- * Unvisited intersection
- * @return {Vertex}
- */
-Polygon.prototype.getFirstIntersect = function() {
-    var v = this.first;
-    do {
-        if (v._isIntersection && !v._visited) {
-            break;
+    /**
+     * Get next non-intersection point
+     * @param  {Vertex} v
+     * @return {Vertex}
+     */
+    Polygon.prototype.getNext = function(v) {
+        var c = v;
+        while (c._isIntersection) {
+            c = c.next;
         }
+        return c;
+    };
 
-        v = v.next;
-    } while (!v.equals(this.first));
-    return v;
-};
+    /**
+     * Unvisited intersection
+     * @return {Vertex}
+     */
+    Polygon.prototype.getFirstIntersect = function() {
+        var v = this.first;
+        do {
+            if (v._isIntersection && !v._visited) {
+                break;
+            }
 
-/**
- * Does the polygon have unvisited vertices
- * @return {Boolean} [description]
- */
-Polygon.prototype.hasUnprocessed = function() {
-    var v = this.first;
-    do {
-        if (v._isIntersection && !v._visited) {
-            return true;
+            v = v.next;
+        } while (!v.equals(this.first));
+        return v;
+    };
+
+    /**
+     * Does the polygon have unvisited vertices
+     * @return {Boolean} [description]
+     */
+    Polygon.prototype.hasUnprocessed = function() {
+        var v = this.first;
+        do {
+            if (v._isIntersection && !v._visited) {
+                return true;
+            }
+
+            v = v.next;
+        } while (!v.equals(this.first));
+        return false;
+    };
+
+    /**
+     * @return {Array.<Array<Number>}
+     */
+    Polygon.prototype.getPoints = function() {
+        var points = [],
+            v = this.first;
+
+        for (var i = 0; i < this.vertices; i++) {
+            points[i] = [v.x, v.y];
+            v = v.next;
         }
+        return points;
+    };
 
-        v = v.next;
-    } while (!v.equals(this.first));
-    return false;
-};
+    /**
+     * Clip polygon against another one.
+     * Result depends on algorithm direction:
+     *
+     * Intersection: forwards forwards
+     * Union:        backwars backwards
+     * Diff:         backwards forwards
+     *
+     * @param {Polygon} clip
+     * @param {Boolean} sourceForwards
+     * @param {Boolean} clipForwards
+     */
+    Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
+        var sourceVertex = this.first,
+            clipVertex = clip.first;
 
-/**
- * @return {Array.<Array<Number>}
- */
-Polygon.prototype.getPoints = function() {
-    var points = [],
-        v = this.first;
+        do {
 
-    for (var i = 0; i < this.vertices; i++) {
-        points[i] = [v.x, v.y];
-        v = v.next;
-    }
-    return points;
-};
+            if (!sourceVertex._isIntersection) {
+                do {
+                    if (!clipVertex._isIntersection) {
+                        var i = new Intersection(
+                            sourceVertex,
+                            this.getNext(sourceVertex.next),
+                            clipVertex, clip.getNext(clipVertex.next));
 
-/**
- * Clip polygon against another one.
- * Result depends on algorithm direction:
- *
- * Intersection: forwards forwards
- * Union:        backwars backwards
- * Diff:         backwards forwards
- *
- * @param {Polygon} clip
- * @param {Boolean} sourceForwards
- * @param {Boolean} clipForwards
- */
-Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
-    var sourceVertex = this.first,
+                        if (i.valid()) {
+                            var sourceIntersection =
+                                Vertex.createIntersection(i.x, i.y, i.toSource),
+                                clipIntersection =
+                                Vertex.createIntersection(i.x, i.y, i.toClip);
+
+                            sourceIntersection._corresponding = clipIntersection;
+                            clipIntersection._corresponding = sourceIntersection;
+
+                            this.insertVertex(
+                                sourceIntersection,
+                                sourceVertex,
+                                this.getNext(sourceVertex.next));
+                            clip.insertVertex(
+                                clipIntersection,
+                                clipVertex,
+                                clip.getNext(clipVertex.next));
+                        }
+                    }
+                    clipVertex = clipVertex.next;
+                } while (!clipVertex.equals(clip.first));
+            }
+
+            sourceVertex = sourceVertex.next;
+        } while (!sourceVertex.equals(this.first));
+
+        // phase two - identify entry/exit points
+        sourceVertex = this.first;
         clipVertex = clip.first;
 
-    do {
+        sourceForwards ^= sourceVertex.isInside(clip);
+        clipForwards ^= clipVertex.isInside(this);
 
-        if (!sourceVertex._isIntersection) {
-            do {
-                if (!clipVertex._isIntersection) {
-                    var i = new Intersection(
-                        sourceVertex,
-                        this.getNext(sourceVertex.next),
-                        clipVertex, clip.getNext(clipVertex.next));
-
-                    if (i.valid()) {
-                        var sourceIntersection =
-                            Vertex.createIntersection(i.x, i.y, i.toSource),
-                            clipIntersection =
-                            Vertex.createIntersection(i.x, i.y, i.toClip);
-
-                        sourceIntersection._corresponding = clipIntersection;
-                        clipIntersection._corresponding = sourceIntersection;
-
-                        this.insertVertex(
-                            sourceIntersection,
-                            sourceVertex,
-                            this.getNext(sourceVertex.next));
-                        clip.insertVertex(
-                            clipIntersection,
-                            clipVertex,
-                            clip.getNext(clipVertex.next));
-                    }
-                }
-                clipVertex = clipVertex.next;
-            } while (!clipVertex.equals(clip.first));
-        }
-
-        sourceVertex = sourceVertex.next;
-    } while (!sourceVertex.equals(this.first));
-
-    // phase two - identify entry/exit points
-    sourceVertex = this.first;
-    clipVertex = clip.first;
-
-    sourceForwards ^= sourceVertex.isInside(clip);
-    clipForwards ^= clipVertex.isInside(this);
-
-    do {
-        if (sourceVertex._isIntersection) {
-            sourceVertex._isEntry = sourceForwards;
-            sourceForwards = !sourceForwards;
-        }
-        sourceVertex = sourceVertex.next;
-    } while (!sourceVertex.equals(this.first));
-
-    do {
-        if (clipVertex._isIntersection) {
-            clipVertex._isEntry = clipForwards;
-            clipForwards = !clipForwards;
-        }
-        clipVertex = clipVertex.next;
-    } while (!clipVertex.equals(clip.first));
-
-    // phase three - construct a list of clipped polygons
-    var list = [];
-
-    while (this.hasUnprocessed()) {
-        var current = this.getFirstIntersect(),
-            clipped = new Polygon([]);
-
-        clipped.addVertex(new Vertex(current.x, current.y));
         do {
-            current.setChecked();
-            if (current._isEntry) {
-                do {
-                    current = current.next;
-                    clipped.addVertex(new Vertex(current.x, current.y));
-                } while (!current._isIntersection);
-
-            } else {
-                do {
-                    current = current.prev;
-                    clipped.addVertex(new Vertex(current.x, current.y));
-                } while (!current._isIntersection);
+            if (sourceVertex._isIntersection) {
+                sourceVertex._isEntry = sourceForwards;
+                sourceForwards = !sourceForwards;
             }
-            current = current._corresponding;
-        } while (!current._visited);
+            sourceVertex = sourceVertex.next;
+        } while (!sourceVertex.equals(this.first));
 
-        list.push(clipped);
+        do {
+            if (clipVertex._isIntersection) {
+                clipVertex._isEntry = clipForwards;
+                clipForwards = !clipForwards;
+            }
+            clipVertex = clipVertex.next;
+        } while (!clipVertex.equals(clip.first));
+
+        // phase three - construct a list of clipped polygons
+        var list = [];
+
+        while (this.hasUnprocessed()) {
+            var current = this.getFirstIntersect(),
+                clipped = new Polygon([]);
+
+            clipped.addVertex(new Vertex(current.x, current.y));
+            do {
+                current.setChecked();
+                if (current._isEntry) {
+                    do {
+                        current = current.next;
+                        clipped.addVertex(new Vertex(current.x, current.y));
+                    } while (!current._isIntersection);
+
+                } else {
+                    do {
+                        current = current.prev;
+                        clipped.addVertex(new Vertex(current.x, current.y));
+                    } while (!current._isIntersection);
+                }
+                current = current._corresponding;
+            } while (!current._visited);
+
+            list.push(clipped);
+        }
+
+        return list;
+    };
+    // Router
+
+    /**
+     * Clip driver
+     * @param  {L.Polygon} polygonA
+     * @param  {L.Polygon} polygonB
+     * @param  {Boolean} sourceForwards
+     * @param  {Boolean} clipForwards
+     * @return {Array.<L.LatLng>|null}
+     */
+    function clip(polygonA, polygonB, sourceForwards, clipForwards) {
+        var source = [],
+            clip = [],
+            result, i, len;
+
+        for (i = 0, len = polygonA._latlngs.length; i < len; i++) {
+            source.push([polygonA._latlngs[i].lng, polygonA._latlngs[i].lat]);
+        }
+        for (i = 0, len = polygonB._latlngs.length; i < len; i++) {
+            clip.push([polygonB._latlngs[i].lng, polygonB._latlngs[i].lat]);
+        }
+
+        source = new Polygon(source),
+        clip = new Polygon(clip);
+
+        result = source.clip(clip, sourceForwards, clipForwards);
+        if (result.length > 0) {
+            for (var i = 0, len = result.length; i < len; i++) {
+                result[i] = toLatLngs(result[i]);
+            }
+
+            if (result) {
+                if (result.length === 1) {
+                    return result[0];
+                } else {
+                    return result;
+                }
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
-    return list;
-};
-// Router
-
-/**
- * Clip driver
- * @param  {L.Polygon} polygonA
- * @param  {L.Polygon} polygonB
- * @param  {Boolean} sourceForwards
- * @param  {Boolean} clipForwards
- * @return {Array.<L.LatLng>|null}
- */
-function clip(polygonA, polygonB, sourceForwards, clipForwards) {
-    var source = [],
-        clip = [],
-        result, i, len;
-
-    for (i = 0, len = polygonA._latlngs.length; i < len; i++) {
-        source.push([polygonA._latlngs[i].lng, polygonA._latlngs[i].lat]);
-    }
-    for (i = 0, len = polygonB._latlngs.length; i < len; i++) {
-        clip.push([polygonB._latlngs[i].lng, polygonB._latlngs[i].lat]);
-    }
-
-    source = new Polygon(source),
-    clip = new Polygon(clip);
-
-    result = source.clip(clip, sourceForwards, clipForwards);
-
-    if (result.length > 0) {
-        result = result[0].getPoints().slice(0, result[0].vertices - 1);
+    function toLatLngs(poly) {
+        var result = poly.getPoints().slice(0, poly.vertices - 1);
 
         if (result) {
             for (var i = 0, len = result.length; i < len; i++) {
-                result[i] = new L.LatLng(result[i][1], result[i][0]);
+                result[i] = [result[i][1], result[i][0]];
             }
 
             return result;
         } else {
             return null;
         }
-    } else {
-        return null;
     }
-}
-return {
-    union: function(polygonA, polygonB) {
-        return clip(polygonA, polygonB, false, false);
-    },
-    intersection: function(polygonA, polygonB) {
-        return clip(polygonA, polygonB, true, true);
-    },
-    diff: function(polygonA, polygonB) {
-        return clip(polygonA, polygonB, false, true);
-    }
-};
+
+    return {
+        union: function(polygonA, polygonB) {
+            return clip(polygonA, polygonB, false, false);
+        },
+        intersection: function(polygonA, polygonB) {
+            return clip(polygonA, polygonB, true, true);
+        },
+        diff: function(polygonA, polygonB) {
+            return clip(polygonA, polygonB, false, true);
+        }
+    };
 
 }));

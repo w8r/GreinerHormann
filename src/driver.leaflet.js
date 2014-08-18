@@ -24,19 +24,34 @@ function clip(polygonA, polygonB, sourceForwards, clipForwards) {
     clip = new Polygon(clip);
 
     result = source.clip(clip, sourceForwards, clipForwards);
-
     if (result.length > 0) {
-        result = result[0].getPoints().slice(0, result[0].vertices - 1);
+        for (var i = 0, len = result.length; i < len; i++) {
+            result[i] = toLatLngs(result[i]);
+        }
 
         if (result) {
-            for (var i = 0, len = result.length; i < len; i++) {
-                result[i] = new L.LatLng(result[i][1], result[i][0]);
+            if (result.length === 1) {
+                return result[0];
+            } else {
+                return result;
             }
-
-            return result;
         } else {
             return null;
         }
+    } else {
+        return null;
+    }
+}
+
+function toLatLngs(poly) {
+    var result = poly.getPoints().slice(0, poly.vertices - 1);
+
+    if (result) {
+        for (var i = 0, len = result.length; i < len; i++) {
+            result[i] = [result[i][1], result[i][0]];
+        }
+
+        return result;
     } else {
         return null;
     }
