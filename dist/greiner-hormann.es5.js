@@ -82,7 +82,7 @@ var Vertex = function(x, y) {
     this._visited = false;
 };
 
-/** 
+/**
  * Creates intersection vertex
  * @param  {Number} x
  * @param  {Number} y
@@ -100,10 +100,10 @@ Vertex.createIntersection = function(x, y, distance) {
 /**
  * Mark as visited
  */
-Vertex.prototype.setChecked = function() {
+Vertex.prototype.visit = function() {
     this._visited = true;
     if (this._corresponding !== null && !this._corresponding._visited) {
-        this._corresponding.setChecked();
+        this._corresponding.visit();
     }
 };
 
@@ -122,19 +122,26 @@ Vertex.prototype.equals = function(v) {
  * segments is odd - the point is inside.
  */
 Vertex.prototype.isInside = function(poly) {
-    var intersections = 0,
-        infinity = new Vertex(Infinity, this.y),
+    var oddNodes = false,
         vertex = poly.first,
-        i;
+        next = vertex.next,
+        x = this.x,
+        y = this.y;
+
     do {
-        i = new Intersection(this, infinity, vertex, poly.getNext(vertex.next));
-        if (!vertex._isIntersection && i.valid()) {
-            intersections++;
+        if ((vertex.y < y && next.y >= y ||
+                next.y < y && vertex.y >= y) &&
+            (vertex.x <= x || next.x <= x)) {
+
+            oddNodes ^= (vertex.x + (y - vertex.y) /
+                (next.y - vertex.y) * (next.x - vertex.x) < x);
         }
+
         vertex = vertex.next;
+        next = vertex.next || poly.first;
     } while (!vertex.equals(poly.first));
 
-    return (intersections % 2) !== 0;
+    return oddNodes;
 };
 /**
  * Intersection
@@ -331,7 +338,6 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
         clipVertex = clip.first;
 
     do {
-
         if (!sourceVertex._isIntersection) {
             do {
                 if (!clipVertex._isIntersection) {
@@ -372,7 +378,6 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
 
     sourceForwards ^= sourceVertex.isInside(clip);
     clipForwards ^= clipVertex.isInside(this);
-
     do {
         if (sourceVertex._isIntersection) {
             sourceVertex._isEntry = sourceForwards;
@@ -398,7 +403,7 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
 
         clipped.addVertex(new Vertex(current.x, current.y));
         do {
-            current.setChecked();
+            current.visit();
             if (current._isEntry) {
                 do {
                     current = current.next;

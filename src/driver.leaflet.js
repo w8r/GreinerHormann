@@ -12,13 +12,15 @@
 function clip(polygonA, polygonB, sourceForwards, clipForwards) {
     var source = [],
         clip = [],
-        result, i, len;
+        result, i, len, latlngs;
 
-    for (i = 0, len = polygonA._latlngs.length; i < len; i++) {
-        source.push([polygonA._latlngs[i].lng, polygonA._latlngs[i].lat]);
+    latlngs = polygonA['_latlngs'];
+    for (i = 0, len = latlngs.length; i < len; i++) {
+        source.push([latlngs[i]['lng'], latlngs[i]['lat']]);
     }
-    for (i = 0, len = polygonB._latlngs.length; i < len; i++) {
-        clip.push([polygonB._latlngs[i].lng, polygonB._latlngs[i].lat]);
+    latlngs = polygonB['_latlngs'];
+    for (i = 0, len = latlngs.length; i < len; i++) {
+        clip.push([latlngs[i]['lng'], latlngs[i]['lat']]);
     }
 
     source = new Polygon(source),
@@ -52,7 +54,6 @@ function toLatLngs(poly) {
         for (var i = 0, len = result.length; i < len; i++) {
             result[i] = [result[i][1], result[i][0]];
         }
-
         return result;
     } else {
         return null;

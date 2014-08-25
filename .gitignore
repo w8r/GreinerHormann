@@ -9,3 +9,5 @@ node_modules/*
 docs/*
 
 build.properties
+
+test/lib/

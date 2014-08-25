@@ -142,7 +142,6 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
         clipVertex = clip.first;
 
     do {
-
         if (!sourceVertex._isIntersection) {
             do {
                 if (!clipVertex._isIntersection) {
@@ -183,7 +182,6 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
 
     sourceForwards ^= sourceVertex.isInside(clip);
     clipForwards ^= clipVertex.isInside(this);
-
     do {
         if (sourceVertex._isIntersection) {
             sourceVertex._isEntry = sourceForwards;
@@ -209,7 +207,7 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
 
         clipped.addVertex(new Vertex(current.x, current.y));
         do {
-            current.setChecked();
+            current.visit();
             if (current._isEntry) {
                 do {
                     current = current.next;
