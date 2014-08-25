@@ -2,6 +2,7 @@
 
 /**
  * Clip driver
+ * @api
  * @param  {L.Polygon} polygonA
  * @param  {L.Polygon} polygonB
  * @param  {Boolean} sourceForwards
@@ -44,7 +45,8 @@ function clip(polygonA, polygonB, sourceForwards, clipForwards) {
 }
 
 function toLatLngs(poly) {
-    var result = poly.getPoints().slice(0, poly.vertices - 1);
+    var result = poly.getPoints()
+        .slice(0, poly.vertices - 1);
 
     if (result) {
         for (var i = 0, len = result.length; i < len; i++) {

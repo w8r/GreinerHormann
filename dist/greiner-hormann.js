@@ -6,10 +6,16 @@
         } else {
             /**
              * @api
+             * @export
              */
-            root.greinerHormann = factory();
+            window['greinerHormann'] = factory();
         }
     }(this, function() {
+// ES5 15.4.3.2 Array.isArray ( arg )
+// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/isArray
+Array.isArray = Array.isArray || function(o) {
+    return Boolean(o && Object.prototype.toString.call(Object(o)) === '[object Array]');
+};
 /**
  * Vertex representation
  *
@@ -419,6 +425,7 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
 
 /**
  * Clip driver
+ * @api
  * @param  {Array.<Array.<Number>>} polygonA
  * @param  {Array.<Array.<Number>>} polygonB
  * @param  {Boolean} sourceForwards
@@ -433,12 +440,32 @@ function clip(polygonA, polygonB, eA, eB) {
     return result;
 }
 return {
+    /**
+     * @api
+     * @param  {Array.<Array.<Number>} polygonA
+     * @param  {Array.<Array.<Number>} polygonB
+     * @return {Array.<Array.<Number>>|Null}
+     */
     union: function(polygonA, polygonB) {
         return clip(polygonA, polygonB, false, false);
     },
+
+    /**
+     * @api
+     * @param  {Array.<Array.<Number>} polygonA
+     * @param  {Array.<Array.<Number>} polygonB
+     * @return {Array.<Array.<Number>>|Null}
+     */
     intersection: function(polygonA, polygonB) {
         return clip(polygonA, polygonB, true, true);
     },
+
+    /**
+     * @api
+     * @param  {Array.<Array.<Number>} polygonA
+     * @param  {Array.<Array.<Number>} polygonB
+     * @return {Array.<Array.<Number>>|Null}
+     */
     diff: function(polygonA, polygonB) {
         return clip(polygonA, polygonB, false, true);
     }

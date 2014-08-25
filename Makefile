@@ -1,6 +1,6 @@
 SOURCES  = dist/greiner-hormann.leaflet.js dist/greiner-hormann.es5.js dist/greiner-hormann.js
 COMPILED = dist/greiner-hormann.leaflet.min.js dist/greiner-hormann.es5.min.js dist/greiner-hormann.min.js
-QS       = compilation_level=SIMPLE_OPTIMIZATIONS&output_format=text
+QS       = compilation_level=ADVANCED_OPTIMIZATIONS&output_format=text
 URL      = http://closure-compiler.appspot.com/compile
 
 all: clean sources compile
@@ -10,6 +10,7 @@ clean:
 
 dist/greiner-hormann.js:
 	@cat src/start.js \
+	     lib/es5.isarray.js \
 	     src/vertex.js \
 	     src/intersection.js \
 	     src/polygon.js \
@@ -18,7 +19,6 @@ dist/greiner-hormann.js:
 
 dist/greiner-hormann.es5.js:
 	@cat src/start.js \
-	     lib/es5.isarray.js \
 	     src/vertex.js \
 	     src/intersection.js \
 	     src/polygon.js \
@@ -40,5 +40,5 @@ compile: ${COMPILED}
 
 %.min.js: %.js
 	@echo " - $(<) -> $(@)";
-	@curl --silent --show-error --data-urlencode "js_code@$(<)" \
+	@curl --silent --show-error --data-urlencode "js_code@$(<)" --data-urlencode "js_externs@src/externs.js" \
 	 --data "${QS}&output_info=compiled_code" ${URL} -o $(@)

@@ -2,6 +2,7 @@
 
 /**
  * Clip driver
+ * @api
  * @param  {Array.<Array.<Number>>} polygonA
  * @param  {Array.<Array.<Number>>} polygonB
  * @param  {Boolean} sourceForwards

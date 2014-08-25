@@ -6,7 +6,8 @@
         } else {
             /**
              * @api
+             * @export
              */
-            root.greinerHormann = factory();
+            window['greinerHormann'] = factory();
         }
     }(this, function() {

@@ -1,0 +1,27 @@
+{
+	"name": "GreinerHormann",
+	"version": "0.0.2",
+	"description": "Greiner-Hormann clipping algorithm",
+	"main": "dist/greiner-hormann.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/w8r/GreinerHormann.git"
+	},
+	"keywords": [
+		"polygon",
+		"clipping",
+		"intersection",
+		"leaflet",
+		"greiner",
+		"hormann"
+	],
+	"author": "w8r",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/w8r/GreinerHormann/issues"
+	},
+	"homepage": "https://github.com/w8r/GreinerHormann"
+}
