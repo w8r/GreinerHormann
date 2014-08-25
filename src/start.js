@@ -1,3 +1,6 @@
+/**
+ * @preserve Licensed under MIT License
+ */
 (function(root, factory) {
         if (typeof define === 'function' && define.amd) {
             define([], factory);
