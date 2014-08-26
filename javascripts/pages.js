@@ -1,4 +1,52 @@
 (function() {
+
+    var HK = [22.2670, 114.188],
+        zoom = 18,
+        source = [
+            [22.26722012682322, 114.18723821640015],
+            [22.267458416642448, 114.18765127658844],
+            [22.267537846492015, 114.18758153915405],
+            [22.26769670605589, 114.18786585330963],
+            [22.26700665851556, 114.1885095834732],
+            [22.26687758449714, 114.18863832950592],
+            [22.26659461411705, 114.1888153553009],
+            [22.26637618044986, 114.18890118598938],
+            [22.266247105849885, 114.18857932090759],
+            [22.26647546852267, 114.18868660926819],
+            [22.266813047443286, 114.18798387050629],
+            [22.26715558992735, 114.18765664100646],
+            [22.26701162289852, 114.18736696243286],
+            [22.26722012682322, 114.18723821640015]
+        ];
+
+    function displayMap(container, center, zoom) {
+        var map = L.map(container, {
+                scrollWheelZoom: false
+            })
+            .setView(center, zoom);
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; ' +
+                '<a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        return map;
+    }
+
+
+    // intersection
+    (function() {
+        var intersectionMap = displayMap('intersection-map', HK, zoom),
+            sourcePolygon = L.polygon(source, {
+                weight: 2
+            }).addTo(intersectionMap),
+            clipPolygon = L.polygon(source, {
+                weight: 2,
+                color: '#0f6'
+            }).addTo(intersectionMap);
+    })();
+
+
+    return;
+
     // Hong Kong
     var map = L.map('map')
         .setView([22.2670, 114.188], 18),

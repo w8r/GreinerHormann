@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Minimal by Steve Smith</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="javascripts/leaflet/leaflet.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="javascripts/leaflet/leaflet.js"></script>
+    <script type="text/javascript" src="javascripts/greiner-hormann.leaflet.min.js"></script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Greiner-Hormann</h1>
+        <p>Efficient polygon clipping algorithm</p>
+        <p class="view"><a href="http://github.com/w8r/GreinerHormann">View the Project on GitHub <small>w8r/GreinerHormann</small></a></p>
+        <ul>
+          <li><a href="https://github.com/w8r/GreinerHormann/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/w8r/GreinerHormann/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="http://github.com/w8r/GreinerHormann">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <section id="main_content" class="inner">
+        <h3>
+<a name="greiner-hormann-clipping-algorithm" class="anchor" href="#greiner-hormann-clipping-algorithm"><span class="octicon octicon-link"></span></a>Greiner-Hormann clipping algorithm</h3>
+
+<p>The algorithm is a rough implementation of Gunther Greiner a Kai Hormann <a href="http://davis.wpi.edu/%7Ematt/courses/clipping/">"Efficient Clipping of Arbitrary Polygons"</a>. You can use it in browser or node.</p>
+
+<p>There are 3 bundles in the <code>dist</code> dir:</p>
+
+<ul>
+<li>
+<strong>greiner-hormann(.min).js</strong> - algorithm, including <code>Array.isArray</code> shim</li>
+<li>
+<strong>greiner-hormann.es5(.min).js</strong> - algorithm, requires <code>Array.isArray</code>
+</li>
+<li>
+<strong>greiner-hormann.leaflet(.min).js</strong> - algorithm + adapter for Leaflet.</li>
+</ul><p>All minified versions are compiled with Google Closure Compiler in ADVANCED mode.</p>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<div class="highlight highlight-html"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"dist/greiner-hormann.leaflet.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+<span class="p">...</span>
+<span class="kd">var</span> <span class="nx">intersection</span> <span class="o">=</span> <span class="nx">greinerHormann</span><span class="p">.</span><span class="nx">intersection</span><span class="p">(</span><span class="nx">source</span><span class="p">,</span> <span class="nx">clip</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">union</span>        <span class="o">=</span> <span class="nx">greinerHormann</span><span class="p">.</span><span class="nx">union</span><span class="p">(</span><span class="nx">source</span><span class="p">,</span> <span class="nx">clip</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">diff</span>         <span class="o">=</span> <span class="nx">greinerHormann</span><span class="p">.</span><span class="nx">diff</span><span class="p">(</span><span class="nx">source</span><span class="p">,</span> <span class="nx">clip</span><span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="k">if</span><span class="p">(</span><span class="nx">intersection</span><span class="p">){</span>
+    <span class="k">if</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">intersection</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s1">'number'</span><span class="p">){</span> <span class="c1">// single linear ring</span>
+        <span class="nx">intersection</span> <span class="o">=</span> <span class="p">[</span><span class="nx">intersection</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">intersection</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">){</span>
+        <span class="nx">L</span><span class="p">.</span><span class="nx">polygon</span><span class="p">(</span><span class="nx">intersection</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="p">{...}).</span><span class="nx">addTo</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="nt">&lt;/script&gt;</span>
+</pre></div>
+
+<h3>
+<a name="results" class="anchor" href="#results"><span class="octicon octicon-link"></span></a>Results</h3>
+
+<p>The output of the binary operation could be one or several linear rings, or <code>null</code>, you have to check.</p>
+
+<h3>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h3>
+
+<h4>
+<a name="and-intersection" class="anchor" href="#and-intersection"><span class="octicon octicon-link"></span></a>AND (Intersection)</h4>
+
+<div id="intersection-map" class="map"></div>
+
+<h4>
+<a name="or-union" class="anchor" href="#or-union"><span class="octicon octicon-link"></span></a>OR (union)</h4>
+
+<div></div>
+
+<h4>
+<a name="xor-diff" class="anchor" href="#xor-diff"><span class="octicon octicon-link"></span></a>XOR (diff)</h4>
+
+<div></div>
+
+<h3>
+<a name="code" class="anchor" href="#code"><span class="octicon octicon-link"></span></a>Code</h3>
+
+<p>Although being adapted for use with leaflet, algorithm uses it's own polygon and vertex abstraction, mainly for the better understanding of the algorithm and flexibility. Maybe I'll provide a plain <code>L.PolyUtils. ...</code> implementation for that in the future.</p>
+
+<h3>
+<a name="development" class="anchor" href="#development"><span class="octicon octicon-link"></span></a>Development</h3>
+
+<p>It's a fairly easy version, some implications may occur when trying to make operation with polygons that are crossing the date change line, for that we'll have to dissect the polygons and treat the parts separately. Also some adaptation is needed to handle holes(entry/exit points analysis).</p>
+
+<p>Following will re-bundle and re-compile the code in the <code>dist</code> folder. Be careful, Google Closure compiler won't output any errors or warnings with current settings. </p>
+
+<div class="highlight highlight-bash"><pre><span class="nv">$ </span>make
+</pre></div>
+
+<h3>
+<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+
+<p><a href="https://github.com/w8r" class="user-mention">@w8r</a></p>
+
+<p>Thanks to <a href="https://github.com/helderco" class="user-mention">@helderco</a></p>
+      </section>
+    </div>
+    <script src="javascripts/pages.js"></script>
+  </body>
+</html>
