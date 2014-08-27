@@ -29,8 +29,8 @@
       </header>
       <section>
         <section id="main_content" class="inner">
-        <h3>
-<a name="greiner-hormann-clipping-algorithm" class="anchor" href="#greiner-hormann-clipping-algorithm"><span class="octicon octicon-link"></span></a>Greiner-Hormann clipping algorithm</h3>
+        <h2>
+<a name="greiner-hormann-clipping-algorithm" class="anchor" href="#greiner-hormann-clipping-algorithm"><span class="octicon octicon-link"></span></a>Greiner-Hormann clipping algorithm</h2>
 
 <p>The algorithm is a rough implementation of Gunther Greiner a Kai Hormann <a href="http://davis.wpi.edu/%7Ematt/courses/clipping/">"Efficient Clipping of Arbitrary Polygons"</a>. You can use it in browser or node.</p>
 
@@ -69,36 +69,36 @@
 <span class="nt">&lt;/script&gt;</span>
 </pre></div>
 
-<h3>
-<a name="results" class="anchor" href="#results"><span class="octicon octicon-link"></span></a>Results</h3>
+<h2>
+<a name="results" class="anchor" href="#results"><span class="octicon octicon-link"></span></a>Results</h2>
 
 <p>The output of the binary operation could be one or several linear rings, or <code>null</code>, you have to check.</p>
 
-<h3>
-<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h3>
+<h2>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
 
-<h4>
-<a name="and-intersection" class="anchor" href="#and-intersection"><span class="octicon octicon-link"></span></a>AND (Intersection)</h4>
+<h3>
+<a name="and-intersection" class="anchor" href="#and-intersection"><span class="octicon octicon-link"></span></a>AND (Intersection)</h3>
 <div id="intersection-map" class="map"></div>
 <br>
 
-<h4>
-<a name="or-union" class="anchor" href="#or-union"><span class="octicon octicon-link"></span></a>OR (union)</h4>
+<h3>
+<a name="or-union" class="anchor" href="#or-union"><span class="octicon octicon-link"></span></a>OR (union)</h3>
 <div id="union-map" class="map"></div>
 <br>
 
-<h4>
-<a name="xor-diff" class="anchor" href="#xor-diff"><span class="octicon octicon-link"></span></a>XOR (diff)</h4>
+<h3>
+<a name="xor-diff" class="anchor" href="#xor-diff"><span class="octicon octicon-link"></span></a>XOR (diff)</h3>
 <div id="diff-map" class="map"></div>
 <br>
 
-<h3>
-<a name="code" class="anchor" href="#code"><span class="octicon octicon-link"></span></a>Code</h3>
+<h2>
+<a name="code" class="anchor" href="#code"><span class="octicon octicon-link"></span></a>Code</h2>
 
 <p>Although being adapted for use with leaflet, algorithm uses it's own polygon and vertex abstraction, mainly for the better understanding of the algorithm and flexibility. Maybe I'll provide a plain <code>L.PolyUtils. ...</code> implementation for that in the future.</p>
 
-<h3>
-<a name="development" class="anchor" href="#development"><span class="octicon octicon-link"></span></a>Development</h3>
+<h2>
+<a name="development" class="anchor" href="#development"><span class="octicon octicon-link"></span></a>Development</h2>
 
 <p>It's an early version, some implications may occur when trying to make operation with polygons that are crossing the date change line, for that we'll have to dissect the polygons and treat the parts separately. Also some adaptation is needed to handle holes(entry/exit points analysis).</p>
 
@@ -107,12 +107,37 @@
 <div class="highlight highlight-bash"><pre><span class="nv">$ </span>make
 </pre></div>
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<h2>
+<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h2>
 
 <p>Alexander Milevski <a href="https://github.com/w8r" class="user-mention">@w8r</a></p>
 
 <p>Thanks to <a href="https://github.com/helderco" class="user-mention">@helderco</a></p>
+
+<h2>License</h2>
+
+<p>(The MIT License)</p>
+
+<p>Copyright (c) 2014 Alexander Milevski <a href="mailto:info@w8r.name">info@w8r.name</a></p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
       </section>
     </div>
     <script src="javascripts/pages.js"></script>
