@@ -34,7 +34,14 @@ var Intersection = function(s1, s2, c1, c2) {
         return;
     }
 
+    /**
+     * @type {Number}
+     */
     this.toSource = ((c2.x - c1.x) * (s1.y - c1.y) - (c2.y - c1.y) * (s1.x - c1.x)) / d;
+
+    /**
+     * @type {Number}
+     */
     this.toClip = ((s2.x - s1.x) * (s1.y - c1.y) - (s2.y - s1.y) * (s1.x - c1.x)) / d;
 
     if (this.valid()) {

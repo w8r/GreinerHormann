@@ -47,10 +47,14 @@ function clip(polygonA, polygonB, sourceForwards, clipForwards) {
 }
 
 function toLatLngs(poly) {
-    var result = poly.getPoints()
-        .slice(0, poly.vertices - 1);
+    var result = poly.getPoints();
 
     if (result) {
+        if (result[0][0] === result[result.length - 1][0] &&
+            result[0][1] === result[result.length - 1][1]) {
+            result = result.slice(0, result.length - 1);
+        }
+
         for (var i = 0, len = result.length; i < len; i++) {
             result[i] = [result[i][1], result[i][0]];
         }
