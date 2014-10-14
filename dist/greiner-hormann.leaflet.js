@@ -184,7 +184,14 @@ var Intersection = function(s1, s2, c1, c2) {
         return;
     }
 
+    /**
+     * @type {Number}
+     */
     this.toSource = ((c2.x - c1.x) * (s1.y - c1.y) - (c2.y - c1.y) * (s1.x - c1.x)) / d;
+
+    /**
+     * @type {Number}
+     */
     this.toClip = ((s2.x - s1.x) * (s1.y - c1.y) - (s2.y - s1.y) * (s1.x - c1.x)) / d;
 
     if (this.valid()) {
@@ -214,6 +221,11 @@ var Polygon = function(p) {
      * @type {Number}
      */
     this.vertices = 0;
+
+    /**
+     * @type {Vertex}
+     */
+    this._lastUnprocessed = null;
 
     for (var i = 0, len = p.length; i < len; i++) {
         this.addVertex(new Vertex(p[i]));
@@ -285,7 +297,8 @@ Polygon.prototype.getNext = function(v) {
  * @return {Vertex}
  */
 Polygon.prototype.getFirstIntersect = function() {
-    var v = this.first;
+    var v = this._firstIntersect || this.first;
+
     do {
         if (v._isIntersection && !v._visited) {
             break;
@@ -293,6 +306,8 @@ Polygon.prototype.getFirstIntersect = function() {
 
         v = v.next;
     } while (!v.equals(this.first));
+
+    this._firstIntersect = v;
     return v;
 };
 
@@ -301,14 +316,17 @@ Polygon.prototype.getFirstIntersect = function() {
  * @return {Boolean} [description]
  */
 Polygon.prototype.hasUnprocessed = function() {
-    var v = this.first;
+    var v = this._lastUnprocessed || this.first;
     do {
         if (v._isIntersection && !v._visited) {
+            this._lastUnprocessed = v;
             return true;
         }
 
         v = v.next;
     } while (!v.equals(this.first));
+
+    this._lastUnprocessed = null;
     return false;
 };
 
@@ -319,10 +337,11 @@ Polygon.prototype.getPoints = function() {
     var points = [],
         v = this.first;
 
-    for (var i = 0; i < this.vertices; i++) {
-        points[i] = [v.x, v.y];
+    do {
+        points.push([v.x, v.y]);
         v = v.next;
-    }
+    } while (v !== this.first);
+
     return points;
 };
 
@@ -340,8 +359,10 @@ Polygon.prototype.getPoints = function() {
  */
 Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
     var sourceVertex = this.first,
-        clipVertex = clip.first;
+        clipVertex = clip.first,
+        sourceInClip, clipInSource;
 
+    // calculate and mark intersections
     do {
         if (!sourceVertex._isIntersection) {
             do {
@@ -381,8 +402,12 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
     sourceVertex = this.first;
     clipVertex = clip.first;
 
-    sourceForwards ^= sourceVertex.isInside(clip);
-    clipForwards ^= clipVertex.isInside(this);
+    sourceInClip = sourceVertex.isInside(clip);
+    clipInSource = clipVertex.isInside(this);
+
+    sourceForwards ^= sourceInClip;
+    clipForwards ^= clipInSource;
+
     do {
         if (sourceVertex._isIntersection) {
             sourceVertex._isEntry = sourceForwards;
@@ -425,6 +450,15 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
         } while (!current._visited);
 
         list.push(clipped);
+    }
+
+    if (list.length === 0) {
+        if (sourceInClip) {
+            list.push(this);
+        }
+        if (clipInSource) {
+            list.push(this);
+        }
     }
 
     return list;
@@ -478,10 +512,14 @@ function clip(polygonA, polygonB, sourceForwards, clipForwards) {
 }
 
 function toLatLngs(poly) {
-    var result = poly.getPoints()
-        .slice(0, poly.vertices - 1);
+    var result = poly.getPoints();
 
     if (result) {
+        if (result[0][0] === result[result.length - 1][0] &&
+            result[0][1] === result[result.length - 1][1]) {
+            result = result.slice(0, result.length - 1);
+        }
+
         for (var i = 0, len = result.length; i < len; i++) {
             result[i] = [result[i][1], result[i][0]];
         }
