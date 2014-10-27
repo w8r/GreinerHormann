@@ -452,7 +452,7 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
             list.push(this);
         }
         if (clipInSource) {
-            list.push(this);
+            list.push(clip);
         }
     }
 
