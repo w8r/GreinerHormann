@@ -8,3 +8,7 @@ Greiner-Hormann polygon clipping
  * ~3kb compressed, no dependencies
 
 [Demo and documentation](http://w8r.github.io/GreinerHormann/)
+
+```
+$ npm install greiner-hormann
+```
