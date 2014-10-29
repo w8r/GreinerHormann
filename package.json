@@ -18,7 +18,7 @@
         "greiner",
         "hormann"
     ],
-    "author": "w8r",
+    "author": "Alexander Milevski <info@w8r.name>",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/w8r/GreinerHormann/issues"
