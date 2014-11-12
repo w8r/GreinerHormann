@@ -2,15 +2,21 @@
  * Vertex representation
  *
  * @param {Number|Array.<Number>} x
- * @param {Number}                [y]
+ * @param {Number=}               y
+ *
  * @constructor
  */
 var Vertex = function(x, y) {
 
-    // Coords
-    if (Array.isArray(x)) {
-        y = x[1];
-        x = x[0];
+    if (arguments.length === 1) {
+        // Coords
+        if (Array.isArray(x)) {
+            y = x[1];
+            x = x[0];
+        } else {
+            y = x.y;
+            x = x.x;
+        }
     }
 
     /**

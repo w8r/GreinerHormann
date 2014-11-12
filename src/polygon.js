@@ -1,8 +1,11 @@
 /**
  * Polygon representation
  * @param {Array.<Array.<Number>>} p
+ * @param {Boolean=}               arrayVertices
+ *
+ * @constructor
  */
-var Polygon = function(p) {
+var Polygon = function(p, arrayVertices) {
 
     /**
      * @type {Vertex}
@@ -18,6 +21,14 @@ var Polygon = function(p) {
      * @type {Vertex}
      */
     this._lastUnprocessed = null;
+
+    /**
+     * Whether to handle input and output as [x,y] or {x:x,y:y}
+     * @type {Boolean}
+     */
+    this._arrayVertices = (typeof arrayVertices === "undefined") ?
+        Array.isArray(p[0]) :
+        arrayVertices;
 
     for (var i = 0, len = p.length; i < len; i++) {
         this.addVertex(new Vertex(p[i]));
@@ -123,16 +134,27 @@ Polygon.prototype.hasUnprocessed = function() {
 };
 
 /**
- * @return {Array.<Array<Number>}
+ * The output depends on what you put in, arrays or objects
+ * @return {Array.<Array<Number>|Array.<Object>}
  */
 Polygon.prototype.getPoints = function() {
     var points = [],
         v = this.first;
 
-    do {
-        points.push([v.x, v.y]);
-        v = v.next;
-    } while (v !== this.first);
+    if (this._arrayVertices) {
+        do {
+            points.push([v.x, v.y]);
+            v = v.next;
+        } while (v !== this.first);
+    } else {
+        do {
+            points.push({
+                x: v.x,
+                y: v.y
+            });
+            v = v.next;
+        } while (v !== this.first);
+    }
 
     return points;
 };
@@ -221,7 +243,8 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
 
     while (this.hasUnprocessed()) {
         var current = this.getFirstIntersect(),
-            clipped = new Polygon([]);
+            // keep format
+            clipped = new Polygon([], this._arrayVertices);
 
         clipped.addVertex(new Vertex(current.x, current.y));
         do {
