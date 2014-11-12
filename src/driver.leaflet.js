@@ -24,7 +24,7 @@ function clip(polygonA, polygonB, sourceForwards, clipForwards) {
     }
 
     source = new Polygon(source),
-    clip = new Polygon(clip);
+        clip = new Polygon(clip);
 
     result = source.clip(clip, sourceForwards, clipForwards);
     if (result.length > 0) {
@@ -47,7 +47,7 @@ function clip(polygonA, polygonB, sourceForwards, clipForwards) {
 }
 
 function toLatLngs(poly) {
-    var result = poly.getPoints();
+    var result = poly;
 
     if (result) {
         if (result[0][0] === result[result.length - 1][0] &&

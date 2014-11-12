@@ -478,15 +478,18 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
             current = current._corresponding;
         } while (!current._visited);
 
-        list.push(clipped);
+        list.push(clipped.getPoints());
     }
 
     if (list.length === 0) {
         if (sourceInClip) {
-            list.push(this);
+            list.push(this.getPoints());
         }
         if (clipInSource) {
-            list.push(clip);
+            list.push(clip.getPoints());
+        }
+        if (list.length === 0) {
+            list = null;
         }
     }
 
@@ -518,7 +521,7 @@ function clip(polygonA, polygonB, sourceForwards, clipForwards) {
     }
 
     source = new Polygon(source),
-    clip = new Polygon(clip);
+        clip = new Polygon(clip);
 
     result = source.clip(clip, sourceForwards, clipForwards);
     if (result.length > 0) {
@@ -541,7 +544,7 @@ function clip(polygonA, polygonB, sourceForwards, clipForwards) {
 }
 
 function toLatLngs(poly) {
-    var result = poly.getPoints();
+    var result = poly;
 
     if (result) {
         if (result[0][0] === result[result.length - 1][0] &&
@@ -560,9 +563,9 @@ function toLatLngs(poly) {
 return {
     /**
      * @api
-     * @param  {Array.<Array.<Number>} polygonA
-     * @param  {Array.<Array.<Number>} polygonB
-     * @return {Array.<Array.<Number>>|Null}
+     * @param  {Array.<Array.<Number>|Array.<Object>} polygonA
+     * @param  {Array.<Array.<Number>|Array.<Object>} polygonB
+     * @return {Array.<Array.<Number>>|Array.<Array.<Object>|Null}
      */
     union: function(polygonA, polygonB) {
         return clip(polygonA, polygonB, false, false);
@@ -570,9 +573,9 @@ return {
 
     /**
      * @api
-     * @param  {Array.<Array.<Number>} polygonA
-     * @param  {Array.<Array.<Number>} polygonB
-     * @return {Array.<Array.<Number>>|Null}
+     * @param  {Array.<Array.<Number>|Array.<Object>} polygonA
+     * @param  {Array.<Array.<Number>|Array.<Object>} polygonB
+     * @return {Array.<Array.<Number>>|Array.<Array.<Object>>|Null}
      */
     intersection: function(polygonA, polygonB) {
         return clip(polygonA, polygonB, true, true);
@@ -580,13 +583,15 @@ return {
 
     /**
      * @api
-     * @param  {Array.<Array.<Number>} polygonA
-     * @param  {Array.<Array.<Number>} polygonB
-     * @return {Array.<Array.<Number>>|Null}
+     * @param  {Array.<Array.<Number>|Array.<Object>} polygonA
+     * @param  {Array.<Array.<Number>|Array.<Object>} polygonB
+     * @return {Array.<Array.<Number>>|Array.<Array.<Object>>|Null}
      */
     diff: function(polygonA, polygonB) {
         return clip(polygonA, polygonB, false, true);
-    }
+    },
+
+    clip: clip
 };
 
 }));

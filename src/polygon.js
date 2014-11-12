@@ -264,15 +264,18 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
             current = current._corresponding;
         } while (!current._visited);
 
-        list.push(clipped);
+        list.push(clipped.getPoints());
     }
 
     if (list.length === 0) {
         if (sourceInClip) {
-            list.push(this);
+            list.push(this.getPoints());
         }
         if (clipInSource) {
-            list.push(clip);
+            list.push(clip.getPoints());
+        }
+        if (list.length === 0) {
+            list = null;
         }
     }
 

@@ -31,7 +31,7 @@ console.log(
     }, {
         x: 10,
         y: 40
-    }])[0].getPoints()
+    }])
 );
 
 console.log(
@@ -47,5 +47,5 @@ console.log(
         [110, 140],
         [10, 140],
         [10, 40]
-    ])[0].getPoints()
+    ])
 );
