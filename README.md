@@ -9,6 +9,40 @@ Greiner-Hormann polygon clipping
 
 [Demo and documentation](http://w8r.github.io/GreinerHormann/)
 
-```
+## Install
+```bash
 $ npm install greiner-hormann
 ```
+
+Browserify
+```js
+var greinerHormann = require('greiner-hormann');
+```
+
+Browser
+```html
+<script src="path/to/greiner-hormann(.leaflet).min.js"></script>
+```
+
+## Use
+```js
+...
+var intersection = greinerHormann.intersection(source, clip);
+var union        = greinerHormann.union(source, clip);
+var diff         = greinerHormann.diff(source, clip);
+
+...
+
+if(intersection){
+    if(typeof intersection[0][0] === 'number'){ // single linear ring
+        intersection = [intersection];
+    }
+    for(var i = 0, len = intersection.length; i < len; i++){
+        L.polygon(intersection[i], {...}).addTo(map);
+    }
+}
+```
+
+## Format
+Input and output can be `{x:x, y:y}` objects or `[x,y]` pairs. It will output the points in the same format you put in.
+
