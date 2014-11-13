@@ -110,6 +110,8 @@ Vertex.prototype.equals = function(v) {
  * Check if vertex is inside a polygon by odd-even rule:
  * If the number of intersections of a ray out of the point and polygon
  * segments is odd - the point is inside.
+ * @param {Polygon} poly
+ * @return {Boolean}
  */
 Vertex.prototype.isInside = function(poly) {
     var oddNodes = false,
@@ -133,3 +135,5 @@ Vertex.prototype.isInside = function(poly) {
 
     return oddNodes;
 };
+
+module.exports = Vertex;

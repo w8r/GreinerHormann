@@ -1,4 +1,4 @@
-// Router
+var Polygon = require('./polygon');
 
 /**
  * Clip driver
@@ -9,10 +9,10 @@
  * @param  {Boolean}                clipForwards
  * @return {Array.<Array.<Number>>}
  */
-function clip(polygonA, polygonB, eA, eB) {
+module.exports = function(polygonA, polygonB, eA, eB) {
     var result, source = new Polygon(polygonA),
         clip = new Polygon(polygonB),
         result = source.clip(clip, eA, eB);
 
     return result;
-}
+};

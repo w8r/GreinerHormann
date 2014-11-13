@@ -56,3 +56,5 @@ var Intersection = function(s1, s2, c1, c2) {
 Intersection.prototype.valid = function() {
     return (0 < this.toSource && this.toSource < 1) && (0 < this.toClip && this.toClip < 1);
 };
+
+module.exports = Intersection;

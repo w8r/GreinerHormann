@@ -1,159 +1,71 @@
-/**
- * @preserve Licensed under MIT License
- */
-(function(root, factory) {
-        if (typeof define === 'function' && define.amd) {
-            define([], factory);
-        } else if (typeof exports === 'object') {
-            module['exports'] = factory();
-        } else {
-            /**
-             * @api
-             * @export
-             */
-            window['greinerHormann'] = factory();
-        }
-    }(this, function() {
-// ES5 15.4.3.2 Array.isArray ( arg )
-// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/isArray
-Array.isArray = Array.isArray || function(o) {
-    return Boolean(o && Object.prototype.toString.call(Object(o)) === '[object Array]');
-};
-/**
- * Vertex representation
- *
- * @param {Number|Array.<Number>} x
- * @param {Number=}               y
- *
- * @constructor
- */
-var Vertex = function(x, y) {
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var n;"undefined"!=typeof window?n=window:"undefined"!=typeof global?n=global:"undefined"!=typeof self&&(n=self),n.greinerHormann=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var Polygon = require('./polygon');
 
-    if (arguments.length === 1) {
-        // Coords
-        if (Array.isArray(x)) {
-            y = x[1];
-            x = x[0];
-        } else {
-            y = x.y;
-            x = x.x;
-        }
+/**
+ * Clip driver
+ * @api
+ * @param  {L.Polygon} polygonA
+ * @param  {L.Polygon} polygonB
+ * @param  {Boolean} sourceForwards
+ * @param  {Boolean} clipForwards
+ * @return {Array.<L.LatLng>|null}
+ */
+module.exports = function(polygonA, polygonB, sourceForwards, clipForwards) {
+    var source = [],
+        clip = [],
+        result, i, len, latlngs;
+
+    latlngs = polygonA['_latlngs'];
+    for (i = 0, len = latlngs.length; i < len; i++) {
+        source.push([latlngs[i]['lng'], latlngs[i]['lat']]);
+    }
+    latlngs = polygonB['_latlngs'];
+    for (i = 0, len = latlngs.length; i < len; i++) {
+        clip.push([latlngs[i]['lng'], latlngs[i]['lat']]);
     }
 
-    /**
-     * X coordinate
-     * @type {Number}
-     */
-    this.x = x;
+    source = new Polygon(source),
+        clip = new Polygon(clip);
 
-    /**
-     * Y coordinate
-     * @type {Number}
-     */
-    this.y = y;
-
-    /**
-     * Next node
-     * @type {Vertex}
-     */
-    this.next = null;
-
-    /**
-     * Previous vertex
-     * @type {Vertex}
-     */
-    this.prev = null;
-
-    /**
-     * Corresponding intersection in other polygon
-     */
-    this._corresponding = null;
-
-    /**
-     * Distance from previous
-     */
-    this._distance = 0.0;
-
-    /**
-     * Entry/exit point in another polygon
-     * @type {Boolean}
-     */
-    this._isEntry = true;
-
-    /**
-     * Intersection vertex flag
-     * @type {Boolean}
-     */
-    this._isIntersection = false;
-
-    /**
-     * Loop check
-     * @type {Boolean}
-     */
-    this._visited = false;
-};
-
-/**
- * Creates intersection vertex
- * @param  {Number} x
- * @param  {Number} y
- * @param  {Number} distance
- * @return {Vertex}
- */
-Vertex.createIntersection = function(x, y, distance) {
-    var vertex = new Vertex(x, y);
-    vertex._distance = distance;
-    vertex._isIntersection = true;
-    vertex._isEntry = false;
-    return vertex;
-};
-
-/**
- * Mark as visited
- */
-Vertex.prototype.visit = function() {
-    this._visited = true;
-    if (this._corresponding !== null && !this._corresponding._visited) {
-        this._corresponding.visit();
-    }
-};
-
-/**
- * Convenience
- * @param  {Vertex}  v
- * @return {Boolean}
- */
-Vertex.prototype.equals = function(v) {
-    return this.x === v.x && this.y === v.y;
-};
-
-/**
- * Check if vertex is inside a polygon by odd-even rule:
- * If the number of intersections of a ray out of the point and polygon
- * segments is odd - the point is inside.
- */
-Vertex.prototype.isInside = function(poly) {
-    var oddNodes = false,
-        vertex = poly.first,
-        next = vertex.next,
-        x = this.x,
-        y = this.y;
-
-    do {
-        if ((vertex.y < y && next.y >= y ||
-                next.y < y && vertex.y >= y) &&
-            (vertex.x <= x || next.x <= x)) {
-
-            oddNodes ^= (vertex.x + (y - vertex.y) /
-                (next.y - vertex.y) * (next.x - vertex.x) < x);
+    result = source.clip(clip, sourceForwards, clipForwards);
+    if (result.length > 0) {
+        for (var i = 0, len = result.length; i < len; i++) {
+            result[i] = toLatLngs(result[i]);
         }
 
-        vertex = vertex.next;
-        next = vertex.next || poly.first;
-    } while (!vertex.equals(poly.first));
+        if (result) {
+            if (result.length === 1) {
+                return result[0];
+            } else {
+                return result;
+            }
+        } else {
+            return null;
+        }
+    } else {
+        return null;
+    }
+}
 
-    return oddNodes;
-};
+function toLatLngs(poly) {
+    var result = poly;
+
+    if (result) {
+        if (result[0][0] === result[result.length - 1][0] &&
+            result[0][1] === result[result.length - 1][1]) {
+            result = result.slice(0, result.length - 1);
+        }
+
+        for (var i = 0, len = result.length; i < len; i++) {
+            result[i] = [result[i][1], result[i][0]];
+        }
+        return result;
+    } else {
+        return null;
+    }
+}
+
+},{"./polygon":4}],2:[function(require,module,exports){
 /**
  * Intersection
  * @param {Vertex} s1
@@ -212,6 +124,50 @@ var Intersection = function(s1, s2, c1, c2) {
 Intersection.prototype.valid = function() {
     return (0 < this.toSource && this.toSource < 1) && (0 < this.toClip && this.toClip < 1);
 };
+
+module.exports = Intersection;
+
+},{}],3:[function(require,module,exports){
+var clip = require('./clip.leaflet');
+
+module.exports = {
+    /**
+     * @api
+     * @param  {Array.<Array.<Number>|Array.<Object>} polygonA
+     * @param  {Array.<Array.<Number>|Array.<Object>} polygonB
+     * @return {Array.<Array.<Number>>|Array.<Array.<Object>|Null}
+     */
+    union: function(polygonA, polygonB) {
+        return clip(polygonA, polygonB, false, false);
+    },
+
+    /**
+     * @api
+     * @param  {Array.<Array.<Number>|Array.<Object>} polygonA
+     * @param  {Array.<Array.<Number>|Array.<Object>} polygonB
+     * @return {Array.<Array.<Number>>|Array.<Array.<Object>>|Null}
+     */
+    intersection: function(polygonA, polygonB) {
+        return clip(polygonA, polygonB, true, true);
+    },
+
+    /**
+     * @api
+     * @param  {Array.<Array.<Number>|Array.<Object>} polygonA
+     * @param  {Array.<Array.<Number>|Array.<Object>} polygonB
+     * @return {Array.<Array.<Number>>|Array.<Array.<Object>>|Null}
+     */
+    diff: function(polygonA, polygonB) {
+        return clip(polygonA, polygonB, false, true);
+    },
+
+    clip: clip
+};
+
+},{"./clip.leaflet":1}],4:[function(require,module,exports){
+var Vertex = require('./vertex');
+var Intersection = require('./intersection');
+
 /**
  * Polygon representation
  * @param {Array.<Array.<Number>>} p
@@ -495,103 +451,149 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
 
     return list;
 };
-// Router
 
+module.exports = Polygon;
+
+},{"./intersection":2,"./vertex":5}],5:[function(require,module,exports){
 /**
- * Clip driver
- * @api
- * @param  {L.Polygon} polygonA
- * @param  {L.Polygon} polygonB
- * @param  {Boolean} sourceForwards
- * @param  {Boolean} clipForwards
- * @return {Array.<L.LatLng>|null}
+ * Vertex representation
+ *
+ * @param {Number|Array.<Number>} x
+ * @param {Number=}               y
+ *
+ * @constructor
  */
-function clip(polygonA, polygonB, sourceForwards, clipForwards) {
-    var source = [],
-        clip = [],
-        result, i, len, latlngs;
+var Vertex = function(x, y) {
 
-    latlngs = polygonA['_latlngs'];
-    for (i = 0, len = latlngs.length; i < len; i++) {
-        source.push([latlngs[i]['lng'], latlngs[i]['lat']]);
-    }
-    latlngs = polygonB['_latlngs'];
-    for (i = 0, len = latlngs.length; i < len; i++) {
-        clip.push([latlngs[i]['lng'], latlngs[i]['lat']]);
-    }
-
-    source = new Polygon(source),
-        clip = new Polygon(clip);
-
-    result = source.clip(clip, sourceForwards, clipForwards);
-    if (result.length > 0) {
-        for (var i = 0, len = result.length; i < len; i++) {
-            result[i] = toLatLngs(result[i]);
-        }
-
-        if (result) {
-            if (result.length === 1) {
-                return result[0];
-            } else {
-                return result;
-            }
+    if (arguments.length === 1) {
+        // Coords
+        if (Array.isArray(x)) {
+            y = x[1];
+            x = x[0];
         } else {
-            return null;
+            y = x.y;
+            x = x.x;
         }
-    } else {
-        return null;
     }
-}
-
-function toLatLngs(poly) {
-    var result = poly;
-
-    if (result) {
-        if (result[0][0] === result[result.length - 1][0] &&
-            result[0][1] === result[result.length - 1][1]) {
-            result = result.slice(0, result.length - 1);
-        }
-
-        for (var i = 0, len = result.length; i < len; i++) {
-            result[i] = [result[i][1], result[i][0]];
-        }
-        return result;
-    } else {
-        return null;
-    }
-}
-return {
-    /**
-     * @api
-     * @param  {Array.<Array.<Number>|Array.<Object>} polygonA
-     * @param  {Array.<Array.<Number>|Array.<Object>} polygonB
-     * @return {Array.<Array.<Number>>|Array.<Array.<Object>|Null}
-     */
-    union: function(polygonA, polygonB) {
-        return clip(polygonA, polygonB, false, false);
-    },
 
     /**
-     * @api
-     * @param  {Array.<Array.<Number>|Array.<Object>} polygonA
-     * @param  {Array.<Array.<Number>|Array.<Object>} polygonB
-     * @return {Array.<Array.<Number>>|Array.<Array.<Object>>|Null}
+     * X coordinate
+     * @type {Number}
      */
-    intersection: function(polygonA, polygonB) {
-        return clip(polygonA, polygonB, true, true);
-    },
+    this.x = x;
 
     /**
-     * @api
-     * @param  {Array.<Array.<Number>|Array.<Object>} polygonA
-     * @param  {Array.<Array.<Number>|Array.<Object>} polygonB
-     * @return {Array.<Array.<Number>>|Array.<Array.<Object>>|Null}
+     * Y coordinate
+     * @type {Number}
      */
-    diff: function(polygonA, polygonB) {
-        return clip(polygonA, polygonB, false, true);
-    },
+    this.y = y;
 
-    clip: clip
+    /**
+     * Next node
+     * @type {Vertex}
+     */
+    this.next = null;
+
+    /**
+     * Previous vertex
+     * @type {Vertex}
+     */
+    this.prev = null;
+
+    /**
+     * Corresponding intersection in other polygon
+     */
+    this._corresponding = null;
+
+    /**
+     * Distance from previous
+     */
+    this._distance = 0.0;
+
+    /**
+     * Entry/exit point in another polygon
+     * @type {Boolean}
+     */
+    this._isEntry = true;
+
+    /**
+     * Intersection vertex flag
+     * @type {Boolean}
+     */
+    this._isIntersection = false;
+
+    /**
+     * Loop check
+     * @type {Boolean}
+     */
+    this._visited = false;
 };
 
-}));
+/**
+ * Creates intersection vertex
+ * @param  {Number} x
+ * @param  {Number} y
+ * @param  {Number} distance
+ * @return {Vertex}
+ */
+Vertex.createIntersection = function(x, y, distance) {
+    var vertex = new Vertex(x, y);
+    vertex._distance = distance;
+    vertex._isIntersection = true;
+    vertex._isEntry = false;
+    return vertex;
+};
+
+/**
+ * Mark as visited
+ */
+Vertex.prototype.visit = function() {
+    this._visited = true;
+    if (this._corresponding !== null && !this._corresponding._visited) {
+        this._corresponding.visit();
+    }
+};
+
+/**
+ * Convenience
+ * @param  {Vertex}  v
+ * @return {Boolean}
+ */
+Vertex.prototype.equals = function(v) {
+    return this.x === v.x && this.y === v.y;
+};
+
+/**
+ * Check if vertex is inside a polygon by odd-even rule:
+ * If the number of intersections of a ray out of the point and polygon
+ * segments is odd - the point is inside.
+ * @param {Polygon} poly
+ * @return {Boolean}
+ */
+Vertex.prototype.isInside = function(poly) {
+    var oddNodes = false,
+        vertex = poly.first,
+        next = vertex.next,
+        x = this.x,
+        y = this.y;
+
+    do {
+        if ((vertex.y < y && next.y >= y ||
+                next.y < y && vertex.y >= y) &&
+            (vertex.x <= x || next.x <= x)) {
+
+            oddNodes ^= (vertex.x + (y - vertex.y) /
+                (next.y - vertex.y) * (next.x - vertex.x) < x);
+        }
+
+        vertex = vertex.next;
+        next = vertex.next || poly.first;
+    } while (!vertex.equals(poly.first));
+
+    return oddNodes;
+};
+
+module.exports = Vertex;
+
+},{}]},{},[3])(3)
+});

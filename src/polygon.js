@@ -1,3 +1,6 @@
+var Vertex = require('./vertex');
+var Intersection = require('./intersection');
+
 /**
  * Polygon representation
  * @param {Array.<Array.<Number>>} p
@@ -281,3 +284,5 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
 
     return list;
 };
+
+module.exports = Polygon;

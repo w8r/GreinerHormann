@@ -1,4 +1,4 @@
-var GreinerHormann = require('../dist/greiner-hormann');
+var GreinerHormann = require('../src/greiner-hormann');
 
 console.log(
     GreinerHormann.intersection([{
