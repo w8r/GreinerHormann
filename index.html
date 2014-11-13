@@ -13,7 +13,7 @@
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <script type="text/javascript" src="javascripts/leaflet/leaflet.js"></script>
-    <script type="text/javascript" src="javascripts/greiner-hormann.leaflet.min.js"></script>
+    <script type="text/javascript" src="https://cdn.rawgit.com/w8r/GreinerHormann/master/dist/greiner-hormann.leaflet.min.js"></script>
   </head>
   <body>
     <div class="wrapper">
@@ -63,10 +63,7 @@
 
 <ul>
 <li>
-<strong>greiner-hormann(.min).js</strong> - algorithm, including <code>Array.isArray</code> shim</li>
-<li>
-<strong>greiner-hormann.es5(.min).js</strong> - algorithm, requires <code>Array.isArray</code>
-</li>
+<strong>greiner-hormann(.min).js</strong> - algorithm, requires <code>Array.isArray</code> polyfill, you can find it in <strong>libs</strong></li>
 <li>
 <strong>greiner-hormann.leaflet(.min).js</strong> - algorithm + adapter for Leaflet.</li>
 </ul><p>All minified versions are compiled with Google Closure Compiler in ADVANCED mode.</p>
