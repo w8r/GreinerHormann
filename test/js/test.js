@@ -41,74 +41,22 @@ L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     })
     .addTo(map);
 
-// Initialise the FeatureGroup to store editable layers
-var drawnItems = new L.GeoJSON(geoJSON);
-map.addLayer(drawnItems);
+var drawTest = require('./draw');
+var holesTest = require('./holes');
+var degradationTest = require('./degradation');
 
-var markers = new L.FeatureGroup();
-map.addLayer(markers);
+var parts = global.location.toString().split('?');
 
-// Initialise the draw control and pass it the FeatureGroup of
-// editable layers
-var drawControl = new L.Control.Draw({
-        draw: {
-            polyline: false,
-            circle: false,
-            marker: false
-        },
-        edit: {
-            featureGroup: drawnItems
-        }
-    }),
-    polygons;
-map.addControl(drawControl);
-
-// add it to the map
-map.on('draw:created', function(evt) {
-    drawnItems.addLayer(evt.layer);
-});
-
-// scan for collisions
-map.on('draw:created', function(evt) {
-    var features = drawnItems.getLayers(),
-        feature = evt.layer,
-        collisionPolygonOptions = {
-            color: '#f00',
-            fillColor: '#f00'
-        },
-        otherFeature, intersection, polygon;
-
-    function addIntersectionPolygon(intersection) {
-        var polygon = new L.Polygon(intersection, collisionPolygonOptions)
-        polygon.addTo(map);
-        polygons.push(polygon);
-    }
-
-    for (var i = 0, len = features.length; i < len; i++) {
-        otherFeature = features[i];
-        if (otherFeature === feature) {
-            continue;
-        }
-
-        intersection = greinerHormann.intersection(otherFeature, feature);
-
-        polygons = [];
-
-        if (intersection) {
-            if (typeof intersection[0][0] === 'number') {
-                addIntersectionPolygon(intersection);
-            } else { // multiple
-                for (var i = 0, len = intersection.length; i < len; i++) {
-                    addIntersectionPolygon(intersection[i]);
-                }
-            }
-        }
-    }
-});
+switch (parts[1]) {
+    case 'holes':
+        holesTest(map, geoJSON);
+        break;
+    case 'degradation':
+        break;
+    default:
+        drawTest(map, geoJSON);
+        break;
+}
 
 // expose
-this.map = map;
-this.drawnItems = drawnItems;
-this.polygons = polygons;
-
-this.markers = markers;
+global.map = map;
