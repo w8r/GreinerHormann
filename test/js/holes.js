@@ -49,8 +49,8 @@ module.exports = function(map, geojson) {
             continue;
         }
 
-        intersection = greinerHormann.intersection(otherFeature, feature);
-        console.log(intersection)
+        intersection = greinerHormann.diff(feature, otherFeature, false, true);
+        console.log('result', intersection)
 
         polygons = [];
 

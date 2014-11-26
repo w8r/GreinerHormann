@@ -33,8 +33,15 @@ var Polygon = function(p, arrayVertices) {
         Array.isArray(p[0]) :
         arrayVertices;
 
+    this._addVertices(p);
+};
+
+/**
+ * @param {Arra.<Array.<Number>|Array.<Object>} p
+ */
+Polygon.prototype._addVertices = function(p) {
     for (var i = 0, len = p.length; i < len; i++) {
-        this.addVertex(new Vertex(p[i]));
+        this.addVertex(p[i]);
     }
 };
 
@@ -42,9 +49,10 @@ var Polygon = function(p, arrayVertices) {
  * Add a vertex object to the polygon
  * (vertex is added at the 'end' of the list')
  *
- * @param vertex
+ * @param {Array.<Number>} vertex
  */
 Polygon.prototype.addVertex = function(vertex) {
+    vertex = new Vertex(vertex);
     if (this.first == null) {
         this.first = vertex;
         this.first.next = vertex;
