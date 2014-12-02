@@ -2,6 +2,8 @@ var L = require('leaflet');
 var greinerHormann = require('../../src/leaflet');
 require('leaflet-draw');
 
+L.Icon.Default.imagePath = 'lib/leaflet/images';
+
 // Hong Kong
 var map = L.map('map')
     .setView([22.2670, 114.188], 18),

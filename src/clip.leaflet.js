@@ -1,4 +1,16 @@
+"use strict";
+
 var Polygon = require('./polygon');
+
+function op(s, c) {
+    if (s && c) {
+        return 'intersection';
+    } else if (!(s && c)) {
+        return 'union';
+    } else {
+        return 'diff';
+    }
+}
 
 /**
  * Clip driver
@@ -10,29 +22,60 @@ var Polygon = require('./polygon');
  * @return {Array.<L.LatLng>|null}
  */
 module.exports = function leafletClip(A, B, sourceForwards, clipForwards) {
-    var hullsResult = _clip(A['_latlngs'], B['_latlngs'],
-        sourceForwards, clipForwards);
+    console.group(op(sourceForwards, clipForwards));
+    console.group('hulls');
+    A._holes.forEach(function(h) {
+        h[0].h = true;
+    });
 
-    var holesLength = (A['_holes'] ? A['_holes'].length : 0) +
-        (B['_holes'] ? B['_holes'].length : 0),
-        holeResult;
+    B._holes.forEach(function(h) {
+        h[0].h = true;
+    });
+
+    var hullsResult = _clip(
+        A['_latlngs'].concat([].concat.apply([], A['_holes'])),
+        B['_latlngs'].concat([].concat.apply([], B['_holes'])),
+        sourceForwards, clipForwards);
+    console.log('hulls result', JSON.stringify(hullsResult));
+
+    return toLatLngs(hullsResult);
+
+    console.groupEnd('hulls');
+
+    var holesLength, holes, holeResult;
+
+    console.log(sourceForwards, clipForwards)
+    if (sourceForwards ^ clipForwards) {
+        console.log(new Polygon(fromLatLngs(A['_latlngs'])).getPoints());
+        hullsResult.push(new Polygon(fromLatLngs(A['_latlngs'])).getPoints())
+        holesLength = (B['_holes'] ? B['_holes'].length : 0);
+        holes = B['_holes'] || [];
+        hullsResult.map(function(hull) {
+            new Polygon(hull).clip()
+        });
+    } else {
+        holesLength = (A['_holes'] ? A['_holes'].length : 0) +
+            (B['_holes'] ? B['_holes'].length : 0);
+        holes = (A['_holes'] || []).concat(B['_holes'] || []);
+    }
 
     console.log('hulls', JSON.stringify(hullsResult))
 
     if (holesLength !== 0) {
-        var holes = (A['_holes'] || []).concat(B['_holes'] || []);
         for (var j = 0, len = hullsResult.length; j < len; j++) {
             var source = new Polygon(hullsResult[j]),
                 holeResult = [];
             for (var i = 0; i < holesLength; i++) {
-                holeResult = holeResult.concat(
-                    source.clip(
-                        new Polygon(fromLatLngs(holes[i])), !sourceForwards, clipForwards
-                    )
+                var clipped = source.clip(
+                    new Polygon(fromLatLngs(holes[i])), !sourceForwards, clipForwards
                 );
-                console.log('holes removed', holeResult);
+                console.log('clipped', clipped, !sourceForwards, clipForwards);
+                if (clipped) {
+                    holeResult = holeResult.concat(clipped);
+                    console.log('holes removed', holeResult);
+                }
             }
-            if (holeResult) {
+            if (holeResult && holeResult.length !== 0) {
                 hullsResult[j] = holeResult;
                 if (!(sourceForwards || clipForwards)) {
                     hullsResult[j].unshift(source.getPoints());
@@ -41,8 +84,8 @@ module.exports = function leafletClip(A, B, sourceForwards, clipForwards) {
         }
     }
 
-    console.log(hullsResult)
-
+    console.log('got', JSON.stringify(hullsResult))
+    console.groupEnd(op(sourceForwards, clipForwards));
     return formatResult(hullsResult);
 };
 
@@ -71,8 +114,11 @@ function formatResult(result) {
 
 function fromLatLngs(latlngs) {
     var pts = [];
-    for (i = 0, len = latlngs.length; i < len; i++) {
+    for (var i = 0, len = latlngs.length; i < len; i++) {
         pts.push([latlngs[i]['lng'], latlngs[i]['lat']]);
+        if (latlngs[i].h) {
+            pts[pts.length - 1].h = true;
+        }
     }
     return pts;
 };

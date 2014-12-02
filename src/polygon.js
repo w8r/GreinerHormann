@@ -39,7 +39,12 @@ var Polygon = function(p, arrayVertices) {
 /**
  * @param {Arra.<Array.<Number>|Array.<Object>} p
  */
-Polygon.prototype._addVertices = function(p) {
+Polygon.prototype._addVertices = function(p, hull) {
+    // if (typeof p[0][0] !== 'number') {
+    //     for (var i = 0, len = p.length; i < len; i++) {
+    //         this._addVertices(p[i], i);
+    //     }
+    // }
     for (var i = 0, len = p.length; i < len; i++) {
         this.addVertex(p[i]);
     }
@@ -114,7 +119,10 @@ Polygon.prototype.getFirstIntersect = function() {
     var v = this._firstIntersect || this.first;
 
     do {
-        if (v._isIntersection && !v._visited) {
+        if (v.h) {
+            console.log('first int', v)
+        }
+        if ((v._isIntersection || v.h) && !v._visited) {
             break;
         }
 
@@ -234,7 +242,7 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
     clipForwards ^= clipInSource;
 
     do {
-        if (sourceVertex._isIntersection) {
+        if (sourceVertex._isIntersection || sourceVertex.h) {
             sourceVertex._isEntry = sourceForwards;
             sourceForwards = !sourceForwards;
         }
@@ -242,7 +250,7 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
     } while (!sourceVertex.equals(this.first));
 
     do {
-        if (clipVertex._isIntersection) {
+        if (clipVertex._isIntersection || clipVertex.h) {
             clipVertex._isEntry = clipForwards;
             clipForwards = !clipForwards;
         }
@@ -260,7 +268,7 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
         clipped.addVertex(new Vertex(current.x, current.y));
         do {
             current.visit();
-            if (current._isEntry) {
+            if (current._isEntry || !current.h) {
                 do {
                     current = current.next;
                     clipped.addVertex(new Vertex(current.x, current.y));
@@ -272,7 +280,7 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
                     clipped.addVertex(new Vertex(current.x, current.y));
                 } while (!current._isIntersection);
             }
-            current = current._corresponding;
+            current = current._corresponding || current.next;
         } while (!current._visited);
 
         list.push(clipped.getPoints());

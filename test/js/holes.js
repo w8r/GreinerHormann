@@ -49,9 +49,7 @@ module.exports = function(map, geojson) {
             continue;
         }
 
-        intersection = greinerHormann.diff(feature, otherFeature, false, true);
-        console.log('result', intersection)
-
+        intersection = greinerHormann.intersection(feature, otherFeature, feature, otherFeature);
         polygons = [];
 
         if (intersection) {
@@ -59,11 +57,14 @@ module.exports = function(map, geojson) {
                 drawIntersection(intersection, map);
             } else { // multiple
                 for (var i = 0, len = intersection.length; i < len; i++) {
-                    drawIntersection(intersection[i], map);
+                    // intersection[i].forEach(function(a) {
+                    //     a.reverse();
+                    // });
+
+                    polygons.push(drawIntersection(intersection[i], map));
                 }
             }
         }
     }
-
 
 };

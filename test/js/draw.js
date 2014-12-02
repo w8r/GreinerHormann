@@ -43,7 +43,7 @@ module.exports = function(map, geoJSON) {
                 continue;
             }
 
-            intersection = greinerHormann.intersection(otherFeature, feature);
+            intersection = greinerHormann.intersection(feature, otherFeature);
 
             polygons = [];
 

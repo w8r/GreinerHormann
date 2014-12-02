@@ -8,6 +8,8 @@
  */
 var Vertex = function(x, y) {
 
+    this.h = x.h;
+
     if (arguments.length === 1) {
         // Coords
         if (Array.isArray(x)) {
