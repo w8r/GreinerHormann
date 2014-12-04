@@ -5,7 +5,9 @@ require('leaflet-draw');
 L.Icon.Default.imagePath = 'lib/leaflet/images';
 
 // Hong Kong
-var map = L.map('map')
+var map = global.map = L.map('map', {
+        maxZoom: 22
+    })
     .setView([22.2670, 114.188], 18),
     geoJSON = {
         "type": "FeatureCollection",

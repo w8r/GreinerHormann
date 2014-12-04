@@ -8,7 +8,11 @@
  */
 var Vertex = function(x, y) {
 
-    this.h = x.h;
+    this.hole = x.h;
+
+    this.end = x.e;
+
+    this.start = x.s;
 
     if (arguments.length === 1) {
         // Coords
@@ -100,15 +104,6 @@ Vertex.prototype.visit = function() {
 };
 
 /**
- * Convenience
- * @param  {Vertex}  v
- * @return {Boolean}
- */
-Vertex.prototype.equals = function(v) {
-    return this.x === v.x && this.y === v.y;
-};
-
-/**
  * Check if vertex is inside a polygon by odd-even rule:
  * If the number of intersections of a ray out of the point and polygon
  * segments is odd - the point is inside.
@@ -133,7 +128,7 @@ Vertex.prototype.isInside = function(poly) {
 
         vertex = vertex.next;
         next = vertex.next || poly.first;
-    } while (!vertex.equals(poly.first));
+    } while (vertex !== poly.first);
 
     return oddNodes;
 };
