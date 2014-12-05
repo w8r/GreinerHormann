@@ -25,12 +25,15 @@ module.exports = function leafletClip(A, B, sourceForwards, clipForwards) {
     console.group(op(sourceForwards, clipForwards));
     console.group('hulls');
 
+    A['_latlngs'].push(new L.LatLng(A['_latlngs'][0].lat, A['_latlngs'][0].lng));
+    B['_latlngs'].push(new L.LatLng(B['_latlngs'][0].lat, B['_latlngs'][0].lng));
+
     var len = A['_latlngs'].length - 1;
     (A._holes || []).forEach(function(h) {
         h[0].h = h[0].s = true;
         h.push(new L.LatLng(h[0].lat, h[0].lng));
         h[h.length - 1].e = true;
-        h.push(new L.LatLng(A['_latlngs'][len].lat, A['_latlngs'][len].lng))
+        //h.push(new L.LatLng(A['_latlngs'][len].lat, A['_latlngs'][len].lng))
     });
 
     len = B['_latlngs'].length - 1;
@@ -38,13 +41,8 @@ module.exports = function leafletClip(A, B, sourceForwards, clipForwards) {
         h[0].h = h[0].s = true;
         h.push(new L.LatLng(h[0].lat, h[0].lng));
         h[h.length - 1].e = true;
-        h.push(new L.LatLng(B['_latlngs'][len].lat, B['_latlngs'][len].lng));
+        //h.push(new L.LatLng(B['_latlngs'][len].lat, B['_latlngs'][len].lng));
     });
-
-    A['_latlngs'].push(new L.LatLng(A['_latlngs'][0].lat, A['_latlngs'][0].lng));
-    B['_latlngs'].push(
-        new L.LatLng(B['_latlngs'][0].lat, B['_latlngs'][0].lng));
-
 
     A['_latlngs'][A['_latlngs'].length - 1].e = true;
     B['_latlngs'][B['_latlngs'].length - 1].e = true;

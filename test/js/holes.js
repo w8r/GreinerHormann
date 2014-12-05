@@ -81,7 +81,7 @@ module.exports = function(map, geojson) {
 
         // continue;
 
-        intersection = greinerHormann.union(feature, otherFeature);
+        intersection = greinerHormann.intersection(feature, otherFeature);
         polygons = [];
 
         if (intersection) {

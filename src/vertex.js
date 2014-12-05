@@ -8,11 +8,11 @@
  */
 var Vertex = function(x, y) {
 
-    this.hole = x.h;
+    this.hole = x.h || x.hole;
 
-    this.end = x.e;
+    this.end = x.e || x.end;
 
-    this.start = x.s;
+    this.start = x.s || x.start;
 
     if (arguments.length === 1) {
         // Coords

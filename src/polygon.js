@@ -222,13 +222,28 @@ Polygon.prototype._debugSegments = function(s1, s2, c1, c2, color1, color2) {
  */
 Polygon.prototype.processIntersections = function(clip) {
     var sourceVertex = this.first,
-        clipVertex = clip.first;
+        clipVertex = clip.first,
+        s = false;
 
     do {
+
         if (!sourceVertex._isIntersection) {
 
             do {
-                if (!clipVertex._isIntersection) {
+
+                // if (clipVertex.end) {
+                //     this._debugSegments(sourceVertex, this.getNext(sourceVertex.next),
+                //         clipVertex, clip.getNext(clipVertex.next));
+                //     s = true;
+                // } else if (sourceVertex.end) {
+                //     this._debugSegments(sourceVertex, this.getNext(sourceVertex.next),
+                //         clipVertex, clip.getNext(clipVertex.next), '#f0f', '#0ff');
+                //     s = true;
+                // } else {
+                //     s = false;
+                // }
+
+                if (!clipVertex._isIntersection && !s) {
 
                     var i = new Intersection(
                         sourceVertex,
@@ -256,11 +271,13 @@ Polygon.prototype.processIntersections = function(clip) {
                     }
                 }
                 clipVertex = clipVertex.next;
-            } while (clipVertex !== clip.first);
+            }
+            while (clipVertex !== clip.first);
         }
 
         sourceVertex = sourceVertex.next;
-    } while (sourceVertex !== this.first);
+    }
+    while (sourceVertex !== this.first);
 };
 
 /**
@@ -305,7 +322,8 @@ Polygon.prototype.processEntryExits = function(clip, sourceForwards, clipForward
  * @return {Array}
  */
 Polygon.prototype.buildClippedPolygons = function(clip) {
-    var list = [];
+    var list = [],
+        v;
 
     while (this.hasUnprocessed()) {
         var current = this.getFirstIntersect(),
@@ -316,36 +334,63 @@ Polygon.prototype.buildClippedPolygons = function(clip) {
         do {
             current.visit();
             if (current._isEntry) {
+                var skip = false;
                 do {
-                    //this._debugSegments(current, current.next);
                     current = current.next;
+                    v = new Vertex(current.x, current.y);
 
-                    if (current.end || current.start) {
-                        //this._debugSegments(null, null, current, current.prev, null, '#0f0');
-                        //list.push(clipped.getPoints());
-                        //clipped = new Polygon([], this._arrayVertices);
-                    }
-                    clipped.addVertex(new Vertex(current.x, current.y));
+                    v.start = current.start;
+                    v.end = current.end;
+                    v.hole = current.hole;
+
+                    clipped.addVertex(v);
                 } while (!current._isIntersection);
 
             } else {
                 do {
-                    //this._debugSegments(null, null, current, current.prev);
                     current = current.prev;
+                    v = new Vertex(current.x, current.y);
 
-                    if (current.end || current.start) {
-                        //this._debugSegments(null, null, current, current.prev, null, '#0ff');
-                        //list.push(clipped.getPoints());
-                        //clipped = new Polygon([], this._arrayVertices);
-                    }
+                    v.start = current.start;
+                    v.end = current.end;
+                    v.hole = current.hole;
 
-                    clipped.addVertex(new Vertex(current.x, current.y));
+
+                    clipped.addVertex(v);
                 } while (!current._isIntersection);
             }
             current = current._corresponding || current.next;
         } while (!current._visited);
 
-        list.push(clipped.getPoints());
+        var c = clipped.first;
+        var d = new Polygon([], this._arrayVertices);
+        var skip = 0;
+        var color = '#0f0'
+        do {
+            //this._debugSegments(null, null, c, c.next, null, color);
+
+
+            /*if (!skip)*/
+            d.addVertex(c);
+            c = c.next;
+
+            if (c.start) {
+                //list.push(d.getPoints())
+                //this._debugSegments(c, c.next);
+                //continue
+                skip = true;
+                //debugger;
+            } else if (c.end) {
+                list.push(d.getPoints());
+                d = new Polygon([], this._arrayVertices);
+                skip = false;
+                //debugger;
+            }
+        } while (c !== clipped.first);
+
+        // tail
+        list.push(d.getPoints());
+        //list.push(clipped.getPoints());
     }
 
     //list.pop();
