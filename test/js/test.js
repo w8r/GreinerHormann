@@ -2,8 +2,12 @@ var L = require('leaflet');
 var greinerHormann = require('../../src/leaflet');
 require('leaflet-draw');
 
+L.Icon.Default.imagePath = 'lib/leaflet/images';
+
 // Hong Kong
-var map = L.map('map')
+var map = global.map = L.map('map', {
+        maxZoom: 22
+    })
     .setView([22.2670, 114.188], 18),
     geoJSON = {
         "type": "FeatureCollection",
@@ -28,6 +32,13 @@ var map = L.map('map')
                         [114.18765664100646, 22.26715558992735],
                         [114.18736696243286, 22.26701162289852],
                         [114.18723821640015, 22.26722012682322]
+                    ],
+                    [
+                        [114.1877371072769, 22.267388915487086],
+                        [114.18783903121947, 22.26709601738165],
+                        [114.18809115886688, 22.26728962806241],
+                        [114.18787121772766, 22.267552739583785],
+                        [114.1877371072769, 22.267388915487086]
                     ]
                 ]
             }
@@ -41,74 +52,22 @@ L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     })
     .addTo(map);
 
-// Initialise the FeatureGroup to store editable layers
-var drawnItems = new L.GeoJSON(geoJSON);
-map.addLayer(drawnItems);
+var drawTest = require('./draw');
+var holesTest = require('./holes');
+var degradationTest = require('./degradation');
 
-var markers = new L.FeatureGroup();
-map.addLayer(markers);
+var parts = global.location.toString().split('?');
 
-// Initialise the draw control and pass it the FeatureGroup of
-// editable layers
-var drawControl = new L.Control.Draw({
-        draw: {
-            polyline: false,
-            circle: false,
-            marker: false
-        },
-        edit: {
-            featureGroup: drawnItems
-        }
-    }),
-    polygons;
-map.addControl(drawControl);
-
-// add it to the map
-map.on('draw:created', function(evt) {
-    drawnItems.addLayer(evt.layer);
-});
-
-// scan for collisions
-map.on('draw:created', function(evt) {
-    var features = drawnItems.getLayers(),
-        feature = evt.layer,
-        collisionPolygonOptions = {
-            color: '#f00',
-            fillColor: '#f00'
-        },
-        otherFeature, intersection, polygon;
-
-    function addIntersectionPolygon(intersection) {
-        var polygon = new L.Polygon(intersection, collisionPolygonOptions)
-        polygon.addTo(map);
-        polygons.push(polygon);
-    }
-
-    for (var i = 0, len = features.length; i < len; i++) {
-        otherFeature = features[i];
-        if (otherFeature === feature) {
-            continue;
-        }
-
-        intersection = greinerHormann.intersection(otherFeature, feature);
-
-        polygons = [];
-
-        if (intersection) {
-            if (typeof intersection[0][0] === 'number') {
-                addIntersectionPolygon(intersection);
-            } else { // multiple
-                for (var i = 0, len = intersection.length; i < len; i++) {
-                    addIntersectionPolygon(intersection[i]);
-                }
-            }
-        }
-    }
-});
+switch (parts[1]) {
+    case 'holes':
+        holesTest(map, geoJSON);
+        break;
+    case 'degradation':
+        break;
+    default:
+        drawTest(map, geoJSON);
+        break;
+}
 
 // expose
-this.map = map;
-this.drawnItems = drawnItems;
-this.polygons = polygons;
-
-this.markers = markers;
+global.map = map;
