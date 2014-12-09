@@ -9,7 +9,6 @@ var Intersection = require('./intersection');
  * @constructor
  */
 var Polygon = function(p, arrayVertices) {
-
     /**
      * @type {Vertex}
      */
@@ -40,10 +39,13 @@ var Polygon = function(p, arrayVertices) {
      * @type {Boolean}
      */
     this._arrayVertices = (typeof arrayVertices === "undefined") ?
-        Array.isArray(p[0]) :
+        Array.isArray(p[0][0]) :
         arrayVertices;
 
-    this._addVertices(p);
+    for (var i = 0, len = p.length; i < len; i++) {
+        this._addVertices(p[i]);
+        this.first.prev.c = true;
+    }
 };
 
 /**
@@ -231,17 +233,17 @@ Polygon.prototype.processIntersections = function(clip) {
 
             do {
 
-                // if (clipVertex.end) {
-                //     this._debugSegments(sourceVertex, this.getNext(sourceVertex.next),
-                //         clipVertex, clip.getNext(clipVertex.next));
-                //     s = true;
-                // } else if (sourceVertex.end) {
-                //     this._debugSegments(sourceVertex, this.getNext(sourceVertex.next),
-                //         clipVertex, clip.getNext(clipVertex.next), '#f0f', '#0ff');
-                //     s = true;
-                // } else {
-                //     s = false;
-                // }
+                if (clipVertex.c || clipVertex.c) {
+                    //this._debugSegments(sourceVertex, this.getNext(sourceVertex.next),
+                    //    clipVertex, clip.getNext(clipVertex.next));
+                    //     s = true;
+                    // } else if (sourceVertex.end) {
+                    //     this._debugSegments(sourceVertex, this.getNext(sourceVertex.next),
+                    //         clipVertex, clip.getNext(clipVertex.next), '#f0f', '#0ff');
+                    //     s = true;
+                    // } else {
+                    //     s = false;
+                }
 
                 if (!clipVertex._isIntersection && !s) {
 
@@ -299,7 +301,6 @@ Polygon.prototype.processEntryExits = function(clip, sourceForwards, clipForward
     clipForwards ^= this._clipInSource;
 
     do {
-
         if (sourceVertex._isIntersection) {
             sourceVertex._isEntry = sourceForwards;
             sourceForwards = !sourceForwards;
@@ -328,7 +329,9 @@ Polygon.prototype.buildClippedPolygons = function(clip) {
     while (this.hasUnprocessed()) {
         var current = this.getFirstIntersect(),
             // keep format
-            clipped = new Polygon([], this._arrayVertices);
+            clipped = new Polygon([
+                []
+            ], this._arrayVertices);
 
         clipped.addVertex(new Vertex(current.x, current.y));
         do {
@@ -363,7 +366,9 @@ Polygon.prototype.buildClippedPolygons = function(clip) {
         } while (!current._visited);
 
         var c = clipped.first;
-        var d = new Polygon([], this._arrayVertices);
+        var d = new Polygon([
+            []
+        ], this._arrayVertices);
         var skip = 0;
         var color = '#0f0'
         do {
@@ -381,8 +386,10 @@ Polygon.prototype.buildClippedPolygons = function(clip) {
                 skip = true;
                 //debugger;
             } else if (c.end) {
-                list.push(d.getPoints());
-                d = new Polygon([], this._arrayVertices);
+                //list.push(d.getPoints());
+                // d = new Polygon([
+                //     []
+                // ], this._arrayVertices);
                 skip = false;
                 //debugger;
             }
