@@ -42,9 +42,12 @@ var Polygon = function(p, arrayVertices) {
         Array.isArray(p[0][0]) :
         arrayVertices;
 
+    //    var first, ultimateFirst = null;
     for (var i = 0, len = p.length; i < len; i++) {
         this._addVertices(p[i]);
-        this.first.prev.c = true;
+        if (this.first) {
+            this.first.prev.close = true;
+        }
     }
 };
 
@@ -164,19 +167,21 @@ Polygon.prototype.getPoints = function() {
     var points = [],
         v = this.first;
 
-    if (this._arrayVertices) {
-        do {
-            points.push([v.x, v.y]);
-            v = v.next;
-        } while (v !== this.first);
-    } else {
-        do {
-            points.push({
-                x: v.x,
-                y: v.y
-            });
-            v = v.next;
-        } while (v !== this.first);
+    if (v) {
+        if (this._arrayVertices) {
+            do {
+                points.push([v.x, v.y]);
+                v = v.next;
+            } while (v !== this.first);
+        } else {
+            do {
+                points.push({
+                    x: v.x,
+                    y: v.y
+                });
+                v = v.next;
+            } while (v !== this.first);
+        }
     }
 
     return points;
@@ -233,9 +238,9 @@ Polygon.prototype.processIntersections = function(clip) {
 
             do {
 
-                if (clipVertex.c || clipVertex.c) {
+                if (clipVertex.close || clipVertex.close) {
                     //this._debugSegments(sourceVertex, this.getNext(sourceVertex.next),
-                    //    clipVertex, clip.getNext(clipVertex.next));
+                    //clipVertex, clip.getNext(clipVertex.next));
                     //     s = true;
                     // } else if (sourceVertex.end) {
                     //     this._debugSegments(sourceVertex, this.getNext(sourceVertex.next),
@@ -245,7 +250,7 @@ Polygon.prototype.processIntersections = function(clip) {
                     //     s = false;
                 }
 
-                if (!clipVertex._isIntersection && !s) {
+                if (!clipVertex._isIntersection) {
 
                     var i = new Intersection(
                         sourceVertex,
@@ -261,6 +266,15 @@ Polygon.prototype.processIntersections = function(clip) {
 
                         sourceIntersection._corresponding = clipIntersection;
                         clipIntersection._corresponding = sourceIntersection;
+
+                        if (clipVertex.close || sourceVertex.close) {
+                            clipIntersection.invalid = true;
+                            sourceIntersection.invalid = true;
+
+                            // this._debugSegments(sourceVertex,
+                            //     this.getNext(sourceVertex.next),
+                            //     clipVertex, clip.getNext(clipVertex.next));
+                        }
 
                         this.insertVertex(
                             sourceIntersection,
@@ -324,6 +338,7 @@ Polygon.prototype.processEntryExits = function(clip, sourceForwards, clipForward
  */
 Polygon.prototype.buildClippedPolygons = function(clip) {
     var list = [],
+        raw = [],
         v;
 
     while (this.hasUnprocessed()) {
@@ -333,31 +348,35 @@ Polygon.prototype.buildClippedPolygons = function(clip) {
                 []
             ], this._arrayVertices);
 
-        clipped.addVertex(new Vertex(current.x, current.y));
         do {
             current.visit();
             if (current._isEntry) {
                 var skip = false;
                 do {
+                    if (current.invalid) alert(2)
                     current = current.next;
-                    v = new Vertex(current.x, current.y);
+                    v = new Vertex(current);
 
                     v.start = current.start;
                     v.end = current.end;
                     v.hole = current.hole;
+                    v.invalid = current.invalid;
+                    v.close = current.close;
 
                     clipped.addVertex(v);
                 } while (!current._isIntersection);
 
             } else {
                 do {
+                    if (current.invalid) alert(2)
                     current = current.prev;
-                    v = new Vertex(current.x, current.y);
+                    v = new Vertex(current);
 
                     v.start = current.start;
                     v.end = current.end;
                     v.hole = current.hole;
-
+                    v.invalid = current.invalid;
+                    v.close = current.close;
 
                     clipped.addVertex(v);
                 } while (!current._isIntersection);
@@ -365,40 +384,12 @@ Polygon.prototype.buildClippedPolygons = function(clip) {
             current = current._corresponding || current.next;
         } while (!current._visited);
 
-        var c = clipped.first;
-        var d = new Polygon([
-            []
-        ], this._arrayVertices);
-        var skip = 0;
-        var color = '#0f0'
-        do {
-            //this._debugSegments(null, null, c, c.next, null, color);
-
-
-            /*if (!skip)*/
-            d.addVertex(c);
-            c = c.next;
-
-            if (c.start) {
-                //list.push(d.getPoints())
-                //this._debugSegments(c, c.next);
-                //continue
-                skip = true;
-                //debugger;
-            } else if (c.end) {
-                //list.push(d.getPoints());
-                // d = new Polygon([
-                //     []
-                // ], this._arrayVertices);
-                skip = false;
-                //debugger;
-            }
-        } while (c !== clipped.first);
-
         // tail
-        list.push(d.getPoints());
-        //list.push(clipped.getPoints());
+        //list.push(d.getPoints());
+        list.push(clipped.getPoints());
+        raw.push(clipped);
     }
+    this.processResultPolygons(raw);
 
     //list.pop();
 
@@ -414,6 +405,18 @@ Polygon.prototype.buildClippedPolygons = function(clip) {
         }
     }
     return list;
+};
+
+Polygon.prototype.processResultPolygons = function(polygons) {
+    for (var i = 0, len = polygons.length; i < len; i++) {
+        var polygon = polygons[i],
+            current = polygon.first;
+        do {
+            this._debugSegments(current.prev, current, current, current.next);
+            if (current.invalid) alert(1)
+            current = current.next;
+        } while (current !== polygon.first);
+    }
 };
 
 /**

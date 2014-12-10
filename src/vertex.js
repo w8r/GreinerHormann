@@ -14,6 +14,8 @@ var Vertex = function(x, y) {
 
     this.start = x.s || x.start;
 
+    this.close = x.close;
+
     if (arguments.length === 1) {
         // Coords
         if (Array.isArray(x)) {

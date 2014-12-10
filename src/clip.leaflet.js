@@ -36,7 +36,7 @@ module.exports = function leafletClip(A, B, sourceForwards, clipForwards) {
         h[0].h = h[0].s = true;
         h.push(new L.LatLng(h[0].lat, h[0].lng));
         h[h.length - 1].e = true;
-        h.push(new L.LatLng(A['_latlngs'][len].lat, A['_latlngs'][len].lng))
+        //h.push(new L.LatLng(A['_latlngs'][len].lat, A['_latlngs'][len].lng))
     });
 
     len = B['_latlngs'].length - 1;
@@ -44,7 +44,7 @@ module.exports = function leafletClip(A, B, sourceForwards, clipForwards) {
         h[0].h = h[0].s = true;
         h.push(new L.LatLng(h[0].lat, h[0].lng));
         h[h.length - 1].e = true;
-        h.push(new L.LatLng(B['_latlngs'][len].lat, B['_latlngs'][len].lng));
+        //h.push(new L.LatLng(B['_latlngs'][len].lat, B['_latlngs'][len].lng));
     });
 
     A['_latlngs'][A['_latlngs'].length - 1].e = true;
@@ -118,7 +118,7 @@ function _clip(A, B, sourceForwards, clipForwards) {
         clip = [],
         i, len;
 
-    console.log(A, B)
+    //console.log(A, B)
     source = new Polygon(fromLatLngs(A));
     clip = new Polygon(fromLatLngs(B));
 
@@ -138,7 +138,7 @@ function formatResult(result) {
 }
 
 function fromLatLngs(latlngs) {
-    console.log(latlngs)
+    //console.log(latlngs)
     var pts = [],
         i = 0,
         len = latlngs.length;
