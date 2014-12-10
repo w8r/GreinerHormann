@@ -27,7 +27,7 @@ module.exports = function(polygonA, polygonB, sourceForwards, clipForwards) {
         clip = new Polygon(clip);
 
     result = source.clip(clip, sourceForwards, clipForwards);
-    if (resul && result.length > 0) {
+    if (result && result.length > 0) {
         for (var i = 0, len = result.length; i < len; i++) {
             result[i] = toLatLngs(result[i]);
         }
