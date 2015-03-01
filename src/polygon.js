@@ -407,6 +407,15 @@ Polygon.prototype.buildClippedPolygons = function(clip) {
     return list;
 };
 
+
+/**
+ * Idea: traversing through the polygon -> found `invalid` intersection ->
+ * try and make a ring until you meet the same `invalid` intersection point
+ * again -> if success, wrap it all in another array and go back to the outer
+ * ring
+ *
+ * @type {[type]}
+ */
 Polygon.prototype.processResultPolygons = function(polygons) {
     for (var i = 0, len = polygons.length; i < len; i++) {
         var polygon = polygons[i],

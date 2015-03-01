@@ -54,7 +54,7 @@ module.exports = function leafletClip(A, B, sourceForwards, clipForwards) {
 
     //console.log(A['_latlngs'])
     var hullsResult = _clip(
-        [A['_latlngs']].concat(A['_holes']), [B['_latlngs']].concat(B['_holes']),
+        [A['_latlngs']].concat(A['_holes'] || []), [B['_latlngs']].concat(B['_holes'] || []),
         //A['_latlngs'],
         //B['_latlngs'],
         sourceForwards, clipForwards);
@@ -118,7 +118,7 @@ function _clip(A, B, sourceForwards, clipForwards) {
         clip = [],
         i, len;
 
-    //console.log(A, B)
+    console.log(A, B)
     source = new Polygon(fromLatLngs(A));
     clip = new Polygon(fromLatLngs(B));
 
@@ -142,7 +142,7 @@ function fromLatLngs(latlngs) {
     var pts = [],
         i = 0,
         len = latlngs.length;
-    if (Array.isArray(latlngs[i])) {
+    if (latlngs[i] && Array.isArray(latlngs[i])) {
         for (; i < len; i++) {
             pts.push(fromLatLngs(latlngs[i]));
         }
