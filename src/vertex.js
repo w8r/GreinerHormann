@@ -131,7 +131,7 @@ Vertex.prototype.isInside = function(poly) {
 
     vertex = vertex.next;
     next = vertex.next || poly.first;
-  } while (!vertex.equals(poly.first));
+  } while (vertex !== poly.first);
 
   return oddNodes;
 };

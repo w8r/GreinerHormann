@@ -7,33 +7,11 @@
  * @constructor
  */
 var Intersection = function(s1, s2, c1, c2) {
+  // denomintator
+  var d = (s2.x - s1.x) * (c2.y - c1.y) - (c2.x - c1.x) * (s2.y - s1.y);
 
-  /**
-   * @type {Number}
-   */
-  this.x = 0.0;
-
-  /**
-   * @type {Number}
-   */
-  this.y = 0.0;
-
-  /**
-   * @type {Number}
-   */
-  this.toSource = 0.0;
-
-  /**
-   * @type {Number}
-   */
-  this.toClip = 0.0;
-
-  var d = (c2.y - c1.y) * (s2.x - s1.x) - (c2.x - c1.x) * (s2.y - s1.y);
-
-  if (d === 0) {
+  if (d === 0) { // parallel
     return;
-  } else {
-    this._isDegenerate = true;
   }
 
   /**
@@ -47,12 +25,20 @@ var Intersection = function(s1, s2, c1, c2) {
   this.toClip = ((s2.x - s1.x) * (s1.y - c1.y) - (s2.y - s1.y) * (s1.x - c1.x)) / d;
 
   if (this.valid()) {
+    /**
+     * @type {Number}
+     */
     this.x = s1.x + this.toSource * (s2.x - s1.x);
+
+    /**
+     * @type {Number}
+     */
     this.y = s1.y + this.toSource * (s2.y - s1.y);
   }
 };
 
 /**
+ * Intersection point is on the segment
  * @return {Boolean}
  */
 Intersection.prototype.valid = function() {

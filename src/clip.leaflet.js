@@ -51,11 +51,6 @@ function toLatLngs(poly) {
   var result = poly;
 
   if (result) {
-    if (result[0][0] === result[result.length - 1][0] &&
-      result[0][1] === result[result.length - 1][1]) {
-      //result = result.slice(0, result.length - 1);
-    }
-
     for (var i = 0, len = result.length; i < len; i++) {
       result[i] = [result[i][1], result[i][0]];
     }
