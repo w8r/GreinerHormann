@@ -4,7 +4,7 @@
   "description": "Greiner-Hormann clipping algorithm",
   "main": "src/greiner-hormann.js",
   "scripts": {
-    "test": "tape test/*.js",
+    "test": "tape test/index.js",
     "watch": "watchify example/js/test.js -o example/js/bundle.js -dv",
     "start": "npm run watch & serve"
   },
@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/w8r/GreinerHormann",
   "devDependencies": {
+    "benchmark": "^1.0.0",
     "catw": "^0.2.0",
     "leaflet": "^0.7.3",
     "leaflet-draw": "^0.2.3",

@@ -18,10 +18,13 @@ module.exports = function(polygonA, polygonB, sourceForwards, clipForwards) {
   for (i = 0, len = latlngs.length; i < len; i++) {
     source.push([latlngs[i]['lng'], latlngs[i]['lat']]);
   }
+  source.push([latlngs[0]['lng'], latlngs[0]['lat']]);
+
   latlngs = polygonB['_latlngs'];
   for (i = 0, len = latlngs.length; i < len; i++) {
     clip.push([latlngs[i]['lng'], latlngs[i]['lat']]);
   }
+  clip.push([latlngs[0]['lng'], latlngs[0]['lat']]);
 
   source = new Polygon(source);
   clip = new Polygon(clip);
@@ -51,11 +54,6 @@ function toLatLngs(poly) {
   var result = poly;
 
   if (result) {
-    if (result[0][0] === result[result.length - 1][0] &&
-      result[0][1] === result[result.length - 1][1]) {
-      //result = result.slice(0, result.length - 1);
-    }
-
     for (var i = 0, len = result.length; i < len; i++) {
       result[i] = [result[i][1], result[i][0]];
     }

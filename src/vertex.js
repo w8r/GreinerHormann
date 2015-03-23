@@ -70,7 +70,26 @@ var Vertex = function(x, y) {
    * @type {Boolean}
    */
   this._visited = false;
+
+  /**
+   * @type {Number}
+   */
+  this.type = 0;
 };
+
+Vertex.IN = 'in';
+Vertex.OUT = 'out';
+Vertex.ON = 'on';
+
+Vertex.IN_IN = Vertex.IN + Vertex.IN;
+Vertex.ON_ON = Vertex.ON + Vertex.ON;
+Vertex.OUT_OUT = Vertex.OUT + Vertex.OUT;
+Vertex.IN_OUT = Vertex.IN + Vertex.OUT;
+Vertex.OUT_IN = Vertex.OUT + Vertex.IN;
+Vertex.ON_IN = Vertex.ON + Vertex.IN;
+Vertex.IN_ON = Vertex.IN + Vertex.ON;
+Vertex.ON_OUT = Vertex.ON + Vertex.OUT;
+Vertex.OUT_ON = Vertex.OUT + Vertex.ON;
 
 /**
  * Creates intersection vertex
@@ -134,6 +153,14 @@ Vertex.prototype.isInside = function(poly) {
   } while (!vertex.equals(poly.first));
 
   return oddNodes;
+};
+
+Vertex.prototype.getType = function() {
+  return this.prev.type + this.next.type;
+};
+
+Vertex.prototype.equalTypes = function() {
+  this.prev.type === this.next.type;
 };
 
 module.exports = Vertex;
