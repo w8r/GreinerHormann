@@ -74,7 +74,7 @@ var Vertex = function(x, y) {
   /**
    * @type {Number}
    */
-  this.type = 0;
+  this.type = 'in';
 };
 
 Vertex.IN = 'in';
@@ -150,7 +150,7 @@ Vertex.prototype.isInside = function(poly) {
 
     vertex = vertex.next;
     next = vertex.next || poly.first;
-  } while (!vertex.equals(poly.first));
+  } while (vertex !== poly.first);
 
   return oddNodes;
 };

@@ -7,10 +7,13 @@
  * @constructor
  */
 var Intersection = function(s1, s2, c1, c2) {
-
-  var d = (c2.y - c1.y) * (s2.x - s1.x) - (c2.x - c1.x) * (s2.y - s1.y);
+  // denomintator
+  var d = (s2.x - s1.x) * (c2.y - c1.y) - (c2.x - c1.x) * (s2.y - s1.y);
 
   if (d === 0) {
+    this.valid = function() {
+      return false;
+    }
     return;
   }
 
@@ -52,6 +55,7 @@ Intersection.prototype.onClipEdge = function() {
 };
 
 /**
+ * Intersection point is on the segment
  * @return {Boolean}
  */
 Intersection.prototype.valid = function() {

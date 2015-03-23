@@ -214,6 +214,7 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
             } else if (i.toSource === 1) {
               sourceIntersection = sourceNext;
               sourceIntersection.isDegenerate = true;
+              sourceIntersection._isIntersection = true;
             }
 
             if (i.onClipEdge()) {
