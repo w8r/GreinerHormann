@@ -162,6 +162,35 @@ Polygon.prototype.getPoints = function() {
   return points;
 };
 
+var s1, s2, is;
+
+function seg(a, b, c, d, i) {
+  [s1, s2, is].forEach(function(s) {
+    if (s) {
+      map.removeLayer(s);
+    }
+  });
+
+  s1 = L.polyline([
+    [a.y, a.x],
+    [b.y, b.x]
+  ], {
+    color: '#f00',
+    weight: 2,
+    opacity: 1
+  }).addTo(map);
+
+  s2 = L.polyline([
+    [c.y, c.x],
+    [d.y, d.x]
+  ], {
+    color: '#0fc',
+    weight: 2,
+    opacity: 1
+  }).addTo(map);
+  is = L.circleMarker([i.y, i.x]).addTo(map);
+};
+
 /**
  * Clip polygon against another one.
  * Result depends on algorithm direction:
@@ -186,61 +215,59 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
         if (!clipVertex._isIntersection) {
           var sourceNext = this.getNext(sourceVertex.next);
           var clipNext = clip.getNext(clipVertex.next);
+
           var i = new Intersection(
             sourceVertex, sourceNext,
-            clipVertex, clipNext);
+            clipVertex, clipNext
+          );
 
           if (i.valid()) {
             var sourceIntersection = Vertex.createIntersection(i.x, i.y, i.toSource);
             var clipIntersection = Vertex.createIntersection(i.x, i.y, i.toClip);
 
-            sourceIntersection._corresponding = clipIntersection;
-            clipIntersection._corresponding = sourceIntersection;
+            sourceIntersection._neighbour = clipIntersection;
+            clipIntersection._neighbour = sourceIntersection;
 
             this.insertVertex(sourceIntersection, sourceVertex, sourceNext);
             clip.insertVertex(clipIntersection, clipVertex, clipNext);
 
-          } else if (i.isDegenerate) {
+          } else if (i.isDegenerate) { // only then, not if there's no intersection
+            // seg(sourceVertex, sourceNext, clipVertex, clipNext, i);
+            // debugger;
             var sourceIntersection, clipIntersection;
 
             if (i.onSourceEdge()) {
               sourceIntersection = Vertex.createIntersection(i.x, i.y, i.toSource);
               this.insertVertex(sourceIntersection, sourceVertex, sourceNext);
-              sourceIntersection.isDegenerate = true;
-            } else if (i.toSource === 0) {
+              //sourceIntersection.isDegenerate = true;
+            } else if (i.toSource === 0) { // on source edge start
               sourceIntersection = sourceVertex;
-              sourceIntersection._isIntersection = true;
-              sourceIntersection.isDegenerate = true;
-            } else if (i.toSource === 1) {
+              //sourceIntersection._isIntersection = true;
+              //sourceIntersection.isDegenerate = true;
+            } else if (i.toSource === 1) { // on source edge end
               sourceIntersection = sourceNext;
-              sourceIntersection.isDegenerate = true;
-              sourceIntersection._isIntersection = true;
+              //sourceIntersection.isDegenerate = true;
+              //sourceIntersection._isIntersection = true;
             }
 
-            if (i.onClipEdge()) {
+            if (i.onClipEdge()) { // on source edge
               clipIntersection = Vertex.createIntersection(i.x, i.y, i.toClip);
               this.insertVertex(clipIntersection, clipVertex, clipNext);
-              clipIntersection.isDegenerate = true;
-            } else if (i.toClip === 0) {
+              //clipIntersection.isDegenerate = true;
+            } else if (i.toClip === 0) { // on source edge start
               clipIntersection = clipVertex;
-              clipIntersection._isIntersection = true
-              sourceIntersection.isDegenerate = true;
-            } else if (i.toClip === 1) {
+              //clipIntersection._isIntersection = true
+              //sourceIntersection.isDegenerate = true;
+            } else if (i.toClip === 1) { // on source edge end
               clipIntersection = clipNext;
-              sourceIntersection.isDegenerate = true;
+              //sourceIntersection.isDegenerate = true;
             }
 
             if (sourceIntersection && clipIntersection) {
               sourceIntersection.type = clipIntersection.type = Vertex.ON;
-              // sourceIntersection._isIntersection =
-              //   clipIntersection._isIntersection = true;
-
-              L.marker([i.y, i.x]).addTo(map);
-
-              sourceIntersection._corresponding = clipIntersection;
-              clipIntersection._corresponding = sourceIntersection;
-            } else {
-              console.log(sourceIntersection, clipIntersection);
+              sourceIntersection.isDegenerate = clipIntersection.isDegenerate = true;
+              sourceIntersection._neighbour = clipIntersection;
+              clipIntersection._neighbour = sourceIntersection;
             }
           }
         }
@@ -255,7 +282,7 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
   do {
     if (sourceVertex.isDegenerate) {
       sourceVertex._isIntersection = true;
-      sourceVertex._corresponding._isIntersection = true;
+      sourceVertex._neighbour._isIntersection = true;
     }
     sourceVertex = sourceVertex.next;
   } while (sourceVertex !== this.first);
@@ -270,36 +297,39 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
   sourceForwards ^= sourceInClip;
   clipForwards ^= clipInSource;
 
+  sourceVertex.type = sourceInClip ? Vertex.IN : Vertex.OUT;
+  clipVertex.type = clipInSource ? Vertex.IN : Vertex.OUT;
+
   do {
     if (sourceVertex._isIntersection) {
 
       var remove = (sourceVertex.equalTypes() &&
-        sourceVertex._corresponding.equalTypes());
+        sourceVertex._neighbour.equalTypes());
 
       this._markEntryExit(sourceVertex, sourceForwards, clipForwards, remove);
-      this._markEntryExit(sourceVertex._corresponding, sourceForwards, clipForwards, remove);
+      this._markEntryExit(sourceVertex._neighbour, sourceForwards, clipForwards, remove);
 
       if (!remove && sourceVertex._isEntry === !sourceForwards &&
-        sourceVertex._corresponding._isEntry === !clipForwards) {
+        sourceVertex._neighbour._isEntry === !clipForwards) {
         remove = true;
         sourceVertex.type = Vertex.OUT;
-        sourceVertex._corresponding.type = Vertex.OUT;
+        sourceVertex._neighbour.type = Vertex.OUT;
       } else if (!remove && sourceVertex._isEntry === sourceForwards &&
-        sourceVertex._corresponding._isEntry === clipForwards) {
+        sourceVertex._neighbour._isEntry === clipForwards) {
         remove = true;
         sourceVertex.type = Vertex.IN;
-        sourceVertex._corresponding.type = Vertex.IN;
+        sourceVertex._neighbour.type = Vertex.IN;
       }
 
       if (remove) {
         sourceVertex._isIntersection = false;
-        sourceVertex._corresponding._isIntersection = false;
+        sourceVertex._neighbour._isIntersection = false;
       } else {
 
         // sourceVertex._isEntry = sourceForwards;
         sourceForwards = !sourceForwards;
 
-        // clipVertex = sourceVertex._corresponding;
+        // clipVertex = sourceVertex._neighbour;
         // clipVertex._isEntry = clipForwards;
         clipForwards = !clipForwards;
       }
@@ -338,7 +368,7 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
           clipped.addVertex(new Vertex(current.x, current.y));
         } while (!current._isIntersection);
       }
-      current = current._corresponding;
+      current = current._neighbour;
     } while (!current._visited);
 
     list.push(clipped.getPoints());
@@ -362,16 +392,16 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
 Polygon.prototype._markEntryExit = function(curr, entry, nEntry, remove) {
   var type = curr.getType();
   if (type === Vertex.ON_ON) {
-    if (!curr._corresponding.getType() === Vertex.ON_ON) {
-      this._markEntryExit(curr._corresponding, nEntry, entry, remove);
+    if (!curr._neighbour.getType() === Vertex.ON_ON) {
+      this._markEntryExit(curr._neighbour, nEntry, entry, remove);
       if (entry === nEntry) {
-        curr._isEntry = !curr._corresponding._isEntry;
+        curr._isEntry = !curr._neighbour._isEntry;
       } else {
-        curr._isEntry = curr._corresponding._isEntry;
+        curr._isEntry = curr._neighbour._isEntry;
       }
 
       if (remove) {
-        if (curr._corresponding.type === Vertex.IN) {
+        if (curr._neighbour.type === Vertex.IN) {
           curr.type = Vertex.OUT;
         } else {
           curr.type = Vertex.IN;

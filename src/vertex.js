@@ -46,7 +46,7 @@ var Vertex = function(x, y) {
   /**
    * Corresponding intersection in other polygon
    */
-  this._corresponding = null;
+  this._neighbour = null;
 
   /**
    * Distance from previous
@@ -74,7 +74,7 @@ var Vertex = function(x, y) {
   /**
    * @type {Number}
    */
-  this.type = 'in';
+  this.type = Vertex.IN;
 };
 
 Vertex.IN = 'in';
@@ -102,7 +102,6 @@ Vertex.createIntersection = function(x, y, distance) {
   var vertex = new Vertex(x, y);
   vertex._distance = distance;
   vertex._isIntersection = true;
-  vertex._isEntry = false;
   return vertex;
 };
 
@@ -111,8 +110,8 @@ Vertex.createIntersection = function(x, y, distance) {
  */
 Vertex.prototype.visit = function() {
   this._visited = true;
-  if (this._corresponding !== null && !this._corresponding._visited) {
-    this._corresponding.visit();
+  if (this._neighbour !== null && !this._neighbour._visited) {
+    this._neighbour.visit();
   }
 };
 
