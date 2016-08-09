@@ -9,6 +9,8 @@ Greiner-Hormann polygon clipping
 
 [Demo and documentation](http://w8r.github.io/GreinerHormann/)
 
+**Note:** If you are looking for something more powerful, take a look at the [Martinez polygon clipping](https://github.com/w8r/martinez) implementation.
+
 ## Install
 ```bash
 $ npm install greiner-hormann
