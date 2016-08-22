@@ -9,10 +9,10 @@ clean:
 	@rm -rf dist/*
 
 dist/greiner-hormann.js:
-	@browserify -s greinerHormann src/greiner-hormann.js > dist/greiner-hormann.js
+	@node_modules/.bin/browserify -s greinerHormann src/greiner-hormann.js > dist/greiner-hormann.js
 
 dist/greiner-hormann.leaflet.js:
-	@browserify -s greinerHormann src/leaflet.js > dist/greiner-hormann.leaflet.js
+	@node_modules/.bin/browserify -s greinerHormann src/leaflet.js > dist/greiner-hormann.leaflet.js
 
 sources: ${SOURCES}
 
