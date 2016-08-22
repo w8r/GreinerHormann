@@ -1,36 +1,36 @@
 {
-    "name": "greiner-hormann",
-    "version": "1.3.0",
-    "description": "Greiner-Hormann clipping algorithm",
-    "main": "src/greiner-hormann.js",
-    "scripts": {
-        "test": "node test/suite.js",
-        "watch": "watchify test/js/test.js -o test/js/bundle.js -dv",
-        "start": "npm run watch & serve"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/w8r/GreinerHormann.git"
-    },
-    "keywords": [
-        "polygon",
-        "clipping",
-        "intersection",
-        "leaflet",
-        "greiner",
-        "hormann"
-    ],
-    "author": "Alexander Milevski <info@w8r.name>",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/w8r/GreinerHormann/issues"
-    },
-    "homepage": "https://github.com/w8r/GreinerHormann",
-    "devDependencies": {
-        "catw": "^0.2.0",
-        "leaflet": "^0.7.3",
-        "leaflet-draw": "^0.2.3",
-        "serve": "^1.4.0",
-        "watchify": "^2.1.1"
-    }
+  "name": "greiner-hormann",
+  "version": "1.3.1",
+  "description": "Greiner-Hormann clipping algorithm",
+  "main": "src/greiner-hormann.js",
+  "scripts": {
+    "test": "node test/suite.js",
+    "watch": "watchify test/js/test.js -o test/js/bundle.js -dv",
+    "start": "npm run watch & serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/w8r/GreinerHormann.git"
+  },
+  "keywords": [
+    "polygon",
+    "clipping",
+    "intersection",
+    "leaflet",
+    "greiner",
+    "hormann"
+  ],
+  "author": "Alexander Milevski <info@w8r.name>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/w8r/GreinerHormann/issues"
+  },
+  "homepage": "https://github.com/w8r/GreinerHormann",
+  "devDependencies": {
+    "catw": "^0.2.0",
+    "leaflet": "^0.7.3",
+    "leaflet-draw": "^0.2.3",
+    "serve": "^1.4.0",
+    "watchify": "^2.1.1"
+  }
 }
