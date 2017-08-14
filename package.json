@@ -27,10 +27,10 @@
   },
   "homepage": "https://github.com/w8r/GreinerHormann",
   "devDependencies": {
-    "catw": "^0.2.0",
+    "catw": "^1.0.1",
     "leaflet": "^0.7.3",
     "leaflet-draw": "^0.2.3",
-    "serve": "^1.4.0",
-    "watchify": "^2.1.1"
+    "serve": "^6.0.6",
+    "watchify": "^3.9.0"
   }
 }

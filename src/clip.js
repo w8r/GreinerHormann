@@ -1,6 +1,14 @@
 var Polygon = require('./polygon');
 
 /**
+ * Greiner-Hormann polygon clipping
+ * @license MIT
+ * @author Milevski Alexander (c) 2014
+ * @preserve
+ */
+
+
+/**
  * Clip driver
  * @api
  * @param  {Array.<Array.<Number>>} polygonA
