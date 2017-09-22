@@ -306,10 +306,9 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
     var sourceVertex = this.first,
         clipVertex = clip.first,
         sourceInClip, clipInSource;
-    
-    var _isIntersection = sourceForwards && clipForwards;
-    var _isUnion = !sourcesForwards && !clipForwards;
-    
+
+    var isUnion = !sourceForwards && !clipForwards;
+
     // calculate and mark intersections
     do {
         if (!sourceVertex._isIntersection) {
@@ -401,26 +400,18 @@ Polygon.prototype.clip = function(clip, sourceForwards, clipForwards) {
         list.push(clipped.getPoints());
     }
 
-    if (list.length === 0 && _isIntersection) {
-        if (sourceInClip) {
-            list.push(this.getPoints());
+    if (list.length === 0) {
+        if (isUnion) {
+            if (sourceInClip) list.push(clip.getPoints());
+            if (clipInSource) list.push(this.getPoints());
+        } else if (sourceForwards && clipForwards) {
+            if (sourceInClip) list.push(clip.getPoints(), this.getPoints());
+            if (clipInSource) list.push(this.getPoints(), clip.getPoints());
+        } else {
+            if (sourceInClip) list.push(this.getPoints());
+            if (clipInSource) list.push(clip.getPoints());
         }
-        if (clipInSource) {
-            list.push(clip.getPoints());
-        }
-        if (list.length === 0) {
-            list = null;
-        }
-    } else if (list.length === 0 && _isUnion) {
-        if (sourceInClip) {
-            list.push(clip.getPoints());
-        }
-        if (clipInSource) {
-            list.push(this.getPoints());
-        }
-        if (list.length === 0) {
-            list = null;
-        }
+        if (list.length === 0) list = null;
     }
 
     return list;
