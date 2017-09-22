@@ -90,7 +90,7 @@ map.on('draw:created', function(evt) {
             continue;
         }
 
-        intersection = greinerHormann.diff(otherFeature, feature);
+        intersection = greinerHormann.intersection(otherFeature, feature);
         console.log(intersection);
 
         polygons = [];
