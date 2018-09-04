@@ -1,6 +1,6 @@
 {
   "name": "greiner-hormann",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "description": "Greiner-Hormann clipping algorithm",
   "main": "src/greiner-hormann.js",
   "scripts": {
