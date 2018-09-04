@@ -1,6 +1,7 @@
-var L = require('leaflet');
-var greinerHormann = require('../../src/leaflet');
-require('leaflet-draw');
+import L from 'leaflet';
+import leafletDraw from 'leaflet-draw';
+import * as greinerHormann from '../../src/leaflet';
+
 
 // Hong Kong
 var map = L.map('map')
@@ -54,7 +55,8 @@ var drawControl = new L.Control.Draw({
         draw: {
             polyline: false,
             circle: false,
-            marker: false
+            marker: false,
+            circlemarker: false
         },
         edit: {
             featureGroup: drawnItems
@@ -91,6 +93,7 @@ map.on('draw:created', function(evt) {
         }
 
         intersection = greinerHormann.intersection(otherFeature, feature);
+        console.log(otherFeature, feature);
         console.log(intersection);
 
         polygons = [];
@@ -108,8 +111,8 @@ map.on('draw:created', function(evt) {
 });
 
 // expose
-this.map = map;
-this.drawnItems = drawnItems;
-this.polygons = polygons;
+window.map = map;
+window.drawnItems = drawnItems;
+window.polygons = polygons;
 
-this.markers = markers;
+window.markers = markers;

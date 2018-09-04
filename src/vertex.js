@@ -1,22 +1,21 @@
-/**
- * Vertex representation
- *
- * @param {Number|Array.<Number>} x
- * @param {Number=}               y
- *
- * @constructor
- */
-var Vertex = function(x, y) {
+export default class Vertex {
 
+  /**
+   * Vertex representation
+   *
+   * @param {Number|Array.<Number>} x
+   * @param {Number=}               y
+   */
+  constructor (x, y) {
     if (arguments.length === 1) {
-        // Coords
-        if (Array.isArray(x)) {
-            y = x[1];
-            x = x[0];
-        } else {
-            y = x.y;
-            x = x.x;
-        }
+      // Coords
+      if (Array.isArray(x)) {
+        y = x[1];
+        x = x[0];
+      } else {
+        y = x.y;
+        x = x.x;
+      }
     }
 
     /**
@@ -70,70 +69,72 @@ var Vertex = function(x, y) {
      * @type {Boolean}
      */
     this._visited = false;
-};
+  }
 
-/**
- * Creates intersection vertex
- * @param  {Number} x
- * @param  {Number} y
- * @param  {Number} distance
- * @return {Vertex}
- */
-Vertex.createIntersection = function(x, y, distance) {
-    var vertex = new Vertex(x, y);
+
+  /**
+   * Creates intersection vertex
+   * @param  {Number} x
+   * @param  {Number} y
+   * @param  {Number} distance
+   * @return {Vertex}
+   */
+  static createIntersection (x, y, distance) {
+    const vertex = new Vertex(x, y);
     vertex._distance = distance;
     vertex._isIntersection = true;
     vertex._isEntry = false;
     return vertex;
-};
+  }
 
-/**
- * Mark as visited
- */
-Vertex.prototype.visit = function() {
+
+  /**
+   * Mark as visited
+   */
+  visit () {
     this._visited = true;
     if (this._corresponding !== null && !this._corresponding._visited) {
         this._corresponding.visit();
     }
-};
+  }
 
-/**
- * Convenience
- * @param  {Vertex}  v
- * @return {Boolean}
- */
-Vertex.prototype.equals = function(v) {
+
+  /**
+   * Convenience
+   * @param  {Vertex}  v
+   * @return {Boolean}
+   */
+  equals (v) {
     return this.x === v.x && this.y === v.y;
-};
+  }
 
-/**
- * Check if vertex is inside a polygon by odd-even rule:
- * If the number of intersections of a ray out of the point and polygon
- * segments is odd - the point is inside.
- * @param {Polygon} poly
- * @return {Boolean}
- */
-Vertex.prototype.isInside = function(poly) {
-    var oddNodes = false,
-        vertex = poly.first,
-        next = vertex.next,
-        x = this.x,
-        y = this.y;
+
+  /**
+   * Check if vertex is inside a polygon by odd-even rule:
+   * If the number of intersections of a ray out of the point and polygon
+   * segments is odd - the point is inside.
+   * @param {Polygon} poly
+   * @return {Boolean}
+   */
+  isInside (poly) {
+    let oddNodes = false;
+    let vertex = poly.first;
+    let next = vertex.next;
+    const x = this.x;
+    const y = this.y;
 
     do {
-        if ((vertex.y < y && next.y >= y ||
-                next.y < y && vertex.y >= y) &&
-            (vertex.x <= x || next.x <= x)) {
+      if ((vertex.y < y && next.y   >= y ||
+             next.y < y && vertex.y >= y) &&
+          (vertex.x <= x || next.x <= x)) {
+        oddNodes ^= (vertex.x + (y - vertex.y) /
+              (next.y - vertex.y) * (next.x - vertex.x) < x);
+      }
 
-            oddNodes ^= (vertex.x + (y - vertex.y) /
-                (next.y - vertex.y) * (next.x - vertex.x) < x);
-        }
-
-        vertex = vertex.next;
-        next = vertex.next || poly.first;
+      vertex = vertex.next;
+      next = vertex.next || poly.first;
     } while (!vertex.equals(poly.first));
 
     return oddNodes;
-};
-
-module.exports = Vertex;
+  }
+}

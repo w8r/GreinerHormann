@@ -4,8 +4,9 @@
   "description": "Greiner-Hormann clipping algorithm",
   "main": "src/greiner-hormann.js",
   "scripts": {
-    "test": "node test/suite.js",
-    "watch": "watchify test/js/test.js -o test/js/bundle.js -dv",
+    "build": "rollup -c",
+    "test": "node -r reify test/suite.js",
+    "watch": "rollup -cw",
     "start": "npm run watch & serve"
   },
   "repository": {
@@ -30,7 +31,12 @@
     "catw": "^1.0.1",
     "leaflet": "^0.7.3",
     "leaflet-draw": "^0.2.3",
-    "serve": "^6.0.6",
-    "watchify": "^3.9.0"
+    "reify": "^0.17.3",
+    "rollup": "^0.65.0",
+    "rollup-plugin-buble": "^0.19.2",
+    "rollup-plugin-commonjs": "^9.1.6",
+    "rollup-plugin-node-resolve": "^3.4.0",
+    "rollup-plugin-terser": "^2.0.2",
+    "serve": "^10.0.0"
   }
 }

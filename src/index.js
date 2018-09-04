@@ -1,37 +1,30 @@
-import boolean from './clip.leaflet';
-
+import boolean from './clip';
 
 /**
- * @api
  * @param  {Array.<Array.<Number>|Array.<Object>} polygonA
  * @param  {Array.<Array.<Number>|Array.<Object>} polygonB
  * @return {Array.<Array.<Number>>|Array.<Array.<Object>|Null}
  */
 export function union (polygonA, polygonB) {
-  return clip(polygonA, polygonB, false, false);
+  return boolean(polygonA, polygonB, false, false);
 }
 
-
 /**
- * @api
  * @param  {Array.<Array.<Number>|Array.<Object>} polygonA
  * @param  {Array.<Array.<Number>|Array.<Object>} polygonB
  * @return {Array.<Array.<Number>>|Array.<Array.<Object>>|Null}
  */
 export function intersection (polygonA, polygonB) {
-  return clip(polygonA, polygonB, true, true);
+  return boolean(polygonA, polygonB, true, true);
 }
 
-
 /**
- * @api
  * @param  {Array.<Array.<Number>|Array.<Object>} polygonA
  * @param  {Array.<Array.<Number>|Array.<Object>} polygonB
  * @return {Array.<Array.<Number>>|Array.<Array.<Object>>|Null}
  */
 export function diff (polygonA, polygonB) {
-  return clip(polygonA, polygonB, false, true);
+  return boolean(polygonA, polygonB, false, true);
 }
-
 
 export const clip = boolean;

@@ -1,26 +1,15 @@
-var Polygon = require('./polygon');
-
-/**
- * Greiner-Hormann polygon clipping
- * @license MIT
- * @author Milevski Alexander (c) 2014
- * @preserve
- */
-
+import Polygon from './polygon';
 
 /**
  * Clip driver
- * @api
  * @param  {Array.<Array.<Number>>} polygonA
  * @param  {Array.<Array.<Number>>} polygonB
  * @param  {Boolean}                sourceForwards
  * @param  {Boolean}                clipForwards
  * @return {Array.<Array.<Number>>}
  */
-module.exports = function(polygonA, polygonB, eA, eB) {
-    var result, source = new Polygon(polygonA),
-        clip = new Polygon(polygonB),
-        result = source.clip(clip, eA, eB);
-
-    return result;
-};
+export default function (polygonA, polygonB, eA, eB) {
+  const source = new Polygon(polygonA);
+  const clip = new Polygon(polygonB);
+  return source.clip(clip, eA, eB);
+}
