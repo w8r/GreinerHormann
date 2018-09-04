@@ -1,5 +1,5 @@
 /**
- * greiner-hormann v1.4.0
+ * greiner-hormann v1.4.1
  * Greiner-Hormann clipping algorithm
  *
  * @author Alexander Milevski <info@w8r.name>

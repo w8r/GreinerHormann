@@ -1,8 +1,8 @@
 {
   "name": "greiner-hormann",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Greiner-Hormann clipping algorithm",
-  "main": "src/greiner-hormann.js",
+  "main": "dist/greiner-hormann.js",
   "scripts": {
     "build": "rollup -c",
     "test": "node -r reify test/suite.js",
