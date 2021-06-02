@@ -8,8 +8,7 @@
 buildlogs/*
 node_modules/*
 docs/*
-
+dist
 build.properties
-
 test/lib/
 test/js/bundle.js

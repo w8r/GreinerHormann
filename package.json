@@ -28,7 +28,6 @@
   },
   "homepage": "https://github.com/w8r/GreinerHormann",
   "devDependencies": {
-    "catw": "^1.0.1",
     "leaflet": "^0.7.3",
     "leaflet-draw": "^0.2.3",
     "reify": "^0.17.3",
@@ -37,6 +36,6 @@
     "rollup-plugin-commonjs": "^9.1.6",
     "rollup-plugin-node-resolve": "^3.4.0",
     "rollup-plugin-terser": "^2.0.2",
-    "serve": "^10.0.0"
+    "serve": "^11.3.2"
   }
 }
