@@ -31,7 +31,7 @@
     "leaflet": "^0.7.3",
     "leaflet-draw": "^0.2.3",
     "reify": "^0.17.3",
-    "rollup": "^0.65.0",
+    "rollup": "^2.79.2",
     "rollup-plugin-buble": "^0.19.2",
     "rollup-plugin-commonjs": "^9.1.6",
     "rollup-plugin-node-resolve": "^3.4.0",
