@@ -1,45 +1,48 @@
 import Vertex from './vertex';
 import Intersection from './intersection';
 
+type Point = [number, number] | { x: number; y: number };
+type PointArray = Point[];
 
 export default class Polygon {
-
+  first: Vertex | null;
+  vertices: number;
+  _lastUnprocessed: Vertex | null;
+  _arrayVertices: boolean;
+  _firstIntersect?: Vertex;
 
   /**
    * Polygon representation
-   * @param {Array.<Array.<Number>>} p
-   * @param {Boolean=}               arrayVertices
+   * @param {PointArray} p
+   * @param {boolean=} arrayVertices
    */
-  constructor (p, arrayVertices) {
-
+  constructor(p: PointArray, arrayVertices?: boolean) {
     /**
-     * @type {Vertex}
+     * @type {Vertex | null}
      */
     this.first = null;
 
     /**
-     * @type {Number}
+     * @type {number}
      */
     this.vertices = 0;
 
     /**
-     * @type {Vertex}
+     * @type {Vertex | null}
      */
     this._lastUnprocessed = null;
 
     /**
      * Whether to handle input and output as [x,y] or {x:x,y:y}
-     * @type {Boolean}
+     * @type {boolean}
      */
-    this._arrayVertices = (typeof arrayVertices === "undefined") ?
-        Array.isArray(p[0]) :
-        arrayVertices;
+    this._arrayVertices =
+      typeof arrayVertices === 'undefined' ? Array.isArray(p[0]) : arrayVertices;
 
     for (let i = 0, len = p.length; i < len; i++) {
       this.addVertex(new Vertex(p[i]));
     }
   }
-
 
   /**
    * Add a vertex object to the polygon
@@ -47,23 +50,22 @@ export default class Polygon {
    *
    * @param vertex
    */
-  addVertex (vertex) {
+  addVertex(vertex: Vertex): void {
     if (this.first === null) {
-      this.first      = vertex;
+      this.first = vertex;
       this.first.next = vertex;
       this.first.prev = vertex;
     } else {
       const next = this.first;
-      const prev = next.prev;
+      const prev = next.prev!;
 
-      next.prev   = vertex;
+      next.prev = vertex;
       vertex.next = next;
       vertex.prev = prev;
-      prev.next   = vertex;
+      prev.next = vertex;
     }
     this.vertices++;
   }
-
 
   /**
    * Inserts a vertex inbetween start and end
@@ -72,19 +74,19 @@ export default class Polygon {
    * @param {Vertex} start
    * @param {Vertex} end
    */
-  insertVertex (vertex, start, end) {
-    let prev, curr = start;
+  insertVertex(vertex: Vertex, start: Vertex, end: Vertex): void {
+    let curr = start;
 
     while (!curr.equals(end) && curr._distance < vertex._distance) {
-      curr = curr.next;
+      curr = curr.next!;
     }
 
     vertex.next = curr;
-    prev        = curr.prev;
+    const prev = curr.prev!;
 
     vertex.prev = prev;
-    prev.next   = vertex;
-    curr.prev   = vertex;
+    prev.next = vertex;
+    curr.prev = vertex;
 
     this.vertices++;
   }
@@ -94,71 +96,68 @@ export default class Polygon {
    * @param  {Vertex} v
    * @return {Vertex}
    */
-  getNext (v) {
+  getNext(v: Vertex): Vertex {
     let c = v;
-    while (c._isIntersection) c = c.next;
+    while (c._isIntersection) c = c.next!;
     return c;
   }
-
 
   /**
    * Unvisited intersection
    * @return {Vertex}
    */
-  getFirstIntersect () {
-    let v = this._firstIntersect || this.first;
+  getFirstIntersect(): Vertex {
+    let v = this._firstIntersect || this.first!;
 
     do {
       if (v._isIntersection && !v._visited) break;
 
-      v = v.next;
-    } while (!v.equals(this.first));
+      v = v.next!;
+    } while (!v.equals(this.first!));
 
     this._firstIntersect = v;
     return v;
   }
 
-
   /**
    * Does the polygon have unvisited vertices
-   * @return {Boolean} [description]
+   * @return {boolean}
    */
-  hasUnprocessed () {
-    let v = this._lastUnprocessed || this.first;
+  hasUnprocessed(): boolean {
+    let v = this._lastUnprocessed || this.first!;
     do {
       if (v._isIntersection && !v._visited) {
         this._lastUnprocessed = v;
         return true;
       }
 
-      v = v.next;
-    } while (!v.equals(this.first));
+      v = v.next!;
+    } while (!v.equals(this.first!));
 
     this._lastUnprocessed = null;
     return false;
   }
 
-
   /**
    * The output depends on what you put in, arrays or objects
-   * @return {Array.<Array<Number>|Array.<Object>}
+   * @return {PointArray}
    */
-  getPoints () {
-    const points = [];
-    let v = this.first;
+  getPoints(): PointArray {
+    const points: PointArray = [];
+    let v = this.first!;
 
     if (this._arrayVertices) {
       do {
         points.push([v.x, v.y]);
-        v = v.next;
+        v = v.next!;
       } while (v !== this.first);
     } else {
       do {
         points.push({
           x: v.x,
-          y: v.y
+          y: v.y,
         });
-        v = v.next;
+        v = v.next!;
       } while (v !== this.first);
     }
 
@@ -170,21 +169,22 @@ export default class Polygon {
    * Result depends on algorithm direction:
    *
    * Intersection: forwards forwards
-   * Union:        backwars backwards
+   * Union:        backwards backwards
    * Diff:         backwards forwards
    *
    * @param {Polygon} clip
-   * @param {Boolean} sourceForwards
-   * @param {Boolean} clipForwards
+   * @param {boolean} sourceForwards
+   * @param {boolean} clipForwards
    */
-  clip (clip, sourceForwards, clipForwards) {
-    let sourceVertex = this.first;
-    let clipVertex = clip.first;
-    let sourceInClip, clipInSource;
+  clip(clip: Polygon, sourceForwards: boolean, clipForwards: boolean): PointArray[] | null {
+    let sourceVertex = this.first!;
+    let clipVertex = clip.first!;
+    let sourceInClip: boolean;
+    let clipInSource: boolean;
 
-    const isUnion        = !sourceForwards && !clipForwards;
+    const isUnion = !sourceForwards && !clipForwards;
     const isIntersection = sourceForwards && clipForwards;
-    const isDiff         = !isUnion && !isIntersection;
+    const isDiff = !isUnion && !isIntersection;
 
     // calculate and mark intersections
     do {
@@ -193,56 +193,61 @@ export default class Polygon {
           if (!clipVertex._isIntersection) {
             const i = new Intersection(
               sourceVertex,
-              this.getNext(sourceVertex.next),
-              clipVertex, clip.getNext(clipVertex.next)
+              this.getNext(sourceVertex.next!),
+              clipVertex,
+              clip.getNext(clipVertex.next!)
             );
 
             if (i.valid()) {
               const sourceIntersection = Vertex.createIntersection(i.x, i.y, i.toSource);
-              const clipIntersection   = Vertex.createIntersection(i.x, i.y, i.toClip);
+              const clipIntersection = Vertex.createIntersection(i.x, i.y, i.toClip);
 
               sourceIntersection._corresponding = clipIntersection;
-              clipIntersection._corresponding   = sourceIntersection;
+              clipIntersection._corresponding = sourceIntersection;
 
-              this.insertVertex(sourceIntersection, sourceVertex, this.getNext(sourceVertex.next));
-              clip.insertVertex(clipIntersection, clipVertex, clip.getNext(clipVertex.next));
+              this.insertVertex(
+                sourceIntersection,
+                sourceVertex,
+                this.getNext(sourceVertex.next!)
+              );
+              clip.insertVertex(clipIntersection, clipVertex, clip.getNext(clipVertex.next!));
             }
           }
-          clipVertex = clipVertex.next;
-        } while (!clipVertex.equals(clip.first));
+          clipVertex = clipVertex.next!;
+        } while (!clipVertex.equals(clip.first!));
       }
 
-      sourceVertex = sourceVertex.next;
-    } while (!sourceVertex.equals(this.first));
+      sourceVertex = sourceVertex.next!;
+    } while (!sourceVertex.equals(this.first!));
 
-      // phase two - identify entry/exit points
-    sourceVertex = this.first;
-    clipVertex   = clip.first;
+    // phase two - identify entry/exit points
+    sourceVertex = this.first!;
+    clipVertex = clip.first!;
 
     sourceInClip = sourceVertex.isInside(clip);
     clipInSource = clipVertex.isInside(this);
 
-    sourceForwards ^= sourceInClip;
-    clipForwards ^= clipInSource;
+    sourceForwards = sourceForwards !== sourceInClip;
+    clipForwards = clipForwards !== clipInSource;
 
     do {
       if (sourceVertex._isIntersection) {
         sourceVertex._isEntry = sourceForwards;
         sourceForwards = !sourceForwards;
       }
-      sourceVertex = sourceVertex.next;
-    } while (!sourceVertex.equals(this.first));
+      sourceVertex = sourceVertex.next!;
+    } while (!sourceVertex.equals(this.first!));
 
     do {
       if (clipVertex._isIntersection) {
         clipVertex._isEntry = clipForwards;
         clipForwards = !clipForwards;
       }
-      clipVertex = clipVertex.next;
-    } while (!clipVertex.equals(clip.first));
+      clipVertex = clipVertex.next!;
+    } while (!clipVertex.equals(clip.first!));
 
     // phase three - construct a list of clipped polygons
-    let list = [];
+    let list: PointArray[] = [];
 
     while (this.hasUnprocessed()) {
       let current = this.getFirstIntersect();
@@ -254,17 +259,16 @@ export default class Polygon {
         current.visit();
         if (current._isEntry) {
           do {
-            current = current.next;
+            current = current.next!;
             clipped.addVertex(new Vertex(current.x, current.y));
           } while (!current._isIntersection);
-
         } else {
           do {
-            current = current.prev;
+            current = current.prev!;
             clipped.addVertex(new Vertex(current.x, current.y));
           } while (!current._isIntersection);
         }
-        current = current._corresponding;
+        current = current._corresponding!;
       } while (!current._visited);
 
       list.push(clipped.getPoints());
@@ -272,18 +276,20 @@ export default class Polygon {
 
     if (list.length === 0) {
       if (isUnion) {
-        if (sourceInClip)      list.push(clip.getPoints());
+        if (sourceInClip) list.push(clip.getPoints());
         else if (clipInSource) list.push(this.getPoints());
-        else                   list.push(this.getPoints(), clip.getPoints());
-      } else if (isIntersection) { // intersection
-        if (sourceInClip)      list.push(this.getPoints());
+        else list.push(this.getPoints(), clip.getPoints());
+      } else if (isIntersection) {
+        // intersection
+        if (sourceInClip) list.push(this.getPoints());
         else if (clipInSource) list.push(clip.getPoints());
-      } else { // diff
-        if (sourceInClip)      list.push(clip.getPoints(), this.getPoints());
+      } else {
+        // diff
+        if (sourceInClip) list.push(clip.getPoints(), this.getPoints());
         else if (clipInSource) list.push(this.getPoints(), clip.getPoints());
-        else                   list.push(this.getPoints());
+        else list.push(this.getPoints());
       }
-      if (list.length === 0) list = null;
+      if (list.length === 0) return null;
     }
 
     return list;

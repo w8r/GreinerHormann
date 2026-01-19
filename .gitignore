@@ -12,3 +12,4 @@ dist
 build.properties
 test/lib/
 test/js/bundle.js
+*.tsbuildinfo

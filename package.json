@@ -1,13 +1,31 @@
 {
   "name": "greiner-hormann",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "Greiner-Hormann clipping algorithm",
-  "main": "dist/greiner-hormann.js",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.umd.js"
+    },
+    "./leaflet": {
+      "types": "./dist/leaflet.d.ts",
+      "import": "./dist/leaflet.js",
+      "require": "./dist/leaflet.umd.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "rollup -c",
-    "test": "node -r reify test/suite.js",
-    "watch": "rollup -cw",
-    "start": "npm run watch & serve"
+    "build": "vite build && vite build --config vite.config.leaflet.ts && tsc --emitDeclarationOnly",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "deploy": "gh-pages -d demo -t true"
   },
   "repository": {
     "type": "git",
@@ -28,14 +46,12 @@
   },
   "homepage": "https://github.com/w8r/GreinerHormann",
   "devDependencies": {
+    "@types/node": "^25.0.9",
+    "gh-pages": "^6.3.0",
     "leaflet": "^0.7.3",
     "leaflet-draw": "^0.2.3",
-    "reify": "^0.17.3",
-    "rollup": "^0.65.0",
-    "rollup-plugin-buble": "^0.19.2",
-    "rollup-plugin-commonjs": "^9.1.6",
-    "rollup-plugin-node-resolve": "^3.4.0",
-    "rollup-plugin-terser": "^2.0.2",
-    "serve": "^14.2.0"
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vitest": "^4.0.17"
   }
 }
