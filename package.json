@@ -1,6 +1,6 @@
 {
   "name": "greiner-hormann",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "Greiner-Hormann clipping algorithm",
   "main": "dist/index.umd.js",
   "module": "dist/index.js",
