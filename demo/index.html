@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Greiner-Hormann Polygon Clipping Demo</title>
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="pygment_trac.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/greiner-hormann@1.4.2/dist/leaflet.umd.js"></script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Greiner-Hormann</h1>
+        <p>Efficient polygon clipping algorithm</p>
+        <p class="view"><a href="https://github.com/w8r/GreinerHormann">View the Project on GitHub <small>w8r/GreinerHormann</small></a></p>
+        <ul>
+          <li><a href="https://github.com/w8r/GreinerHormann/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/w8r/GreinerHormann/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/w8r/GreinerHormann">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <section id="main_content" class="inner">
+        <h2>
+<a name="greiner-hormann-clipping-algorithm" class="anchor" href="#greiner-hormann-clipping-algorithm"><span class="octicon octicon-link"></span></a>Greiner-Hormann clipping algorithm</h2>
+
+<p>The algorithm is a rough implementation of Gunther Greiner and Kai Hormann <a href="http://davis.wpi.edu/%7Ematt/courses/clipping/">"Efficient Clipping of Arbitrary Polygons"</a>. You can use it in browser or node.</p>
+
+<ul>
+  <li>Does AND, OR, XOR (intersection, union, difference, if you're human)</li>
+  <li>Plays nicely with <a href="https://leafletjs.com">Leaflet</a>, comes with an adaptor for it</li>
+  <li>Handles non-convex polygons and multiple clipping areas</li>
+  <li>~4kb compressed, no dependencies</li>
+  <li>Written in TypeScript with full type definitions</li>
+</ul>
+
+<h2>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
+
+<h3>
+<a name="and-intersection" class="anchor" href="#and-intersection"><span class="octicon octicon-link"></span></a>AND (Intersection)</h3>
+<div id="intersection-map" class="map"></div>
+<br>
+
+<h3>
+<a name="or-union" class="anchor" href="#or-union"><span class="octicon octicon-link"></span></a>OR (union)</h3>
+<div id="union-map" class="map"></div>
+<br>
+
+<h3>
+<a name="xor-diff" class="anchor" href="#xor-diff"><span class="octicon octicon-link"></span></a>XOR (diff)</h3>
+<div id="diff-map" class="map"></div>
+<br>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<h3>npm</h3>
+<div class="highlight highlight-shell"><pre>
+$ npm install greiner-hormann
+</pre></div>
+
+<h3>ES Modules (Recommended)</h3>
+<div class="highlight highlight-javascript"><pre><span class="k">import</span> <span class="p">{</span> <span class="nx">intersection</span><span class="p">,</span> <span class="nx">union</span><span class="p">,</span> <span class="nx">diff</span> <span class="p">}</span> <span class="k">from</span> <span class="s1">'greiner-hormann'</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">polygon1</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">]];</span>
+<span class="kd">const</span> <span class="nx">polygon2</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">],</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">150</span><span class="p">]];</span>
+
+<span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">intersection</span><span class="p">(</span><span class="nx">polygon1</span><span class="p">,</span> <span class="nx">polygon2</span><span class="p">);</span>
+</pre></div>
+
+<h3>Browser (UMD)</h3>
+<div class="highlight highlight-html"><pre><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://cdn.jsdelivr.net/npm/greiner-hormann@1.4.2/dist/leaflet.umd.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+<span class="c1">// The library is available as greinerHormann global</span>
+<span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">greinerHormann</span><span class="p">.</span><span class="nx">intersection</span><span class="p">(</span><span class="nx">sourcePolygon</span><span class="p">,</span> <span class="nx">clipPolygon</span><span class="p">);</span>
+
+<span class="c1">// With Leaflet polygons</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="p">{</span>
+        <span class="nx">L</span><span class="p">.</span><span class="nx">polygon</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="p">{</span> <span class="na">color</span><span class="p">:</span> <span class="s1">'red'</span> <span class="p">}).</span><span class="nx">addTo</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">result</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">poly</span> <span class="o">=&gt;</span> <span class="nx">L</span><span class="p">.</span><span class="nx">polygon</span><span class="p">(</span><span class="nx">poly</span><span class="p">,</span> <span class="p">{</span> <span class="na">color</span><span class="p">:</span> <span class="s1">'red'</span> <span class="p">}).</span><span class="nx">addTo</span><span class="p">(</span><span class="nx">map</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="nt">&lt;/script&gt;</span>
+</pre></div>
+
+<h2>
+<a name="results" class="anchor" href="#results"><span class="octicon octicon-link"></span></a>Results</h2>
+
+<p>The output of the binary operation could be one or several linear rings, or <code>null</code>. Always check the result before using it.</p>
+
+<h2>
+<a name="typescript" class="anchor" href="#typescript"><span class="octicon octicon-link"></span></a>TypeScript Support</h2>
+
+<p>The library is written in TypeScript and includes full type definitions. Import and use with full type safety:</p>
+
+<div class="highlight highlight-typescript"><pre><span class="k">import</span> <span class="p">{</span> <span class="nx">intersection</span><span class="p">,</span> <span class="nx">union</span><span class="p">,</span> <span class="nx">diff</span> <span class="p">}</span> <span class="k">from</span> <span class="s1">'greiner-hormann'</span><span class="p">;</span>
+
+<span class="kd">type</span> <span class="nx">Point</span> <span class="o">=</span> <span class="p">[</span><span class="kr">number</span><span class="p">,</span> <span class="kr">number</span><span class="p">]</span> <span class="o">|</span> <span class="p">{</span> <span class="nx">x</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span> <span class="nx">y</span><span class="p">:</span> <span class="kr">number</span> <span class="p">};</span>
+<span class="kd">type</span> <span class="nx">Polygon</span> <span class="o">=</span> <span class="nx">Point</span><span class="p">[];</span>
+
+<span class="kd">const</span> <span class="nx">result</span><span class="p">:</span> <span class="nx">Polygon</span><span class="p">[]</span> <span class="o">|</span> <span class="kc">null</span> <span class="o">=</span> <span class="nx">intersection</span><span class="p">(</span><span class="nx">polygon1</span><span class="p">,</span> <span class="nx">polygon2</span><span class="p">);</span>
+</pre></div>
+
+<h2>License</h2>
+
+<p>(The MIT License)</p>
+
+<p>Copyright (c) 2014-2026 Alexander Milevski <a href="mailto:info@w8r.name">info@w8r.name</a></p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+      </section>
+    </div>
+    <script src="demo.js"></script>
+  </body>
+</html>
