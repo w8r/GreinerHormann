@@ -25,7 +25,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "deploy": "gh-pages -d demo -t true"
+    "deploy": "gh-pages -d demo"
   },
   "repository": {
     "type": "git",
